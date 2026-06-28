@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android Developer Integration Guide: libfitness</title>
+    <style>
+        :root {
+            --primary-color: #0366d6;
+            --text-color: #24292e;
+            --bg-color: #ffffff;
+            --code-bg: #f6f8fa;
+            --border-color: #e1e4e8;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        @media (max-width: 767px) {
+            .container {
+                padding: 15px;
+            }
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 16px;
+            overflow: auto;
+            font-size: 85%;
+            line-height: 1.45;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        code {
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            background-color: rgba(27, 31, 35, 0.05);
+            border-radius: 6px;
+        }
+        pre code {
+            padding: 0;
+            margin: 0;
+            font-size: 100%;
+            word-break: normal;
+            white-space: pre;
+            background: transparent;
+            border: 0;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+        h1 { font-size: 2em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+        h2 { font-size: 1.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+        h3 { font-size: 1.25em; }
+        p { margin-top: 0; margin-bottom: 16px; }
+        a { color: var(--primary-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .toc {
+            background-color: var(--code-bg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 32px;
+        }
+        .toc h2 {
+            margin-top: 0;
+            border-bottom: none;
+            font-size: 1.25em;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .toc ul ul {
+            padding-left: 1.5em;
+            margin-top: 0.25em;
+        }
+        .diagram-container {
+            margin: 24px 0;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+        }
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 16px;
+        }
+        table th, table td {
+            border: 1px solid var(--border-color);
+            padding: 6px 13px;
+        }
+        table tr:nth-child(even) { background-color: var(--code-bg); }
+        blockquote {
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid var(--border-color);
+            margin: 0 0 16px 0;
+        }
+        ul, ol { padding-left: 2em; margin-bottom: 16px; }
+        li + li { margin-top: 0.25em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="android-developer-integration-guide-libfitness">Android Developer Integration Guide: libfitness</h1>
+
+        <p>This guide explains how to integrate the <code>libfitness</code> Kotlin Multiplatform (KMP) library into your Android application.</p>
+
+        <nav class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#0-architecture-overview">0. Architecture Overview</a>
+                    <ul>
+                        <li><a href="#01-internal-module-architecture">0.1 Internal Module Architecture</a></li>
+                        <li><a href="#02-integration-flow">0.2 Integration Flow</a></li>
+                    </ul>
+                </li>
+                <li><a href="#1-project-setup--dependency-configuration">1. Project Setup &amp; Dependency Configuration</a>
+                    <ul>
+                        <li><a href="#11-including-the-library">1.1 Including the Library</a></li>
+                        <li><a href="#12-mandatory-gradle-plugins">1.2 Mandatory Gradle Plugins</a></li>
+                        <li><a href="#13-essential-dependencies">1.3 Essential Dependencies</a></li>
+                    </ul>
+                </li>
+                <li><a href="#2-library-initialization--di-integration">2. Library Initialization &amp; DI Integration</a>
+                    <ul>
+                        <li><a href="#21-basic-initialization">2.1 Basic Initialization</a></li>
+                        <li><a href="#22-providing-android-context">2.2 Providing Android Context</a></li>
+                        <li><a href="#23-resolving-dependencies-with-appcomponent">2.3 Resolving Dependencies with AppComponent</a></li>
+                        <li><a href="#24-key-interfaces">2.4 Key Interfaces</a></li>
+                        <li><a href="#25-implementation-examples">2.5 Implementation Examples</a></li>
+                    </ul>
+                </li>
+                <li><a href="#3-shared-ui-integration-compose-multiplatform--voyager">3. Shared UI Integration</a>
+                    <ul>
+                        <li><a href="#31-hosting-a-shared-screen">3.1 Hosting a Shared Screen</a></li>
+                        <li><a href="#32-requirements-for-setcontent">3.2 Requirements for setContent</a></li>
+                        <li><a href="#33-handling-multi-platform-resources-images-strings">3.3 Handling Multi-platform Resources</a></li>
+                        <li><a href="#34-handling-navigation-the-launcher-connection">3.4 Handling Navigation</a></li>
+                    </ul>
+                </li>
+                <li><a href="#4-business-logic-consumption-repositories--services">4. Business Logic Consumption</a>
+                    <ul>
+                        <li><a href="#41-key-services--repositories">4.1 Key Services &amp; Repositories</a></li>
+                        <li><a href="#42-patterns-for-observing-shared-state">4.2 Patterns for Observing Shared State</a></li>
+                    </ul>
+                </li>
+                <li><a href="#5-summary--best-practices">5. Summary &amp; Best Practices</a></li>
+            </ul>
+        </nav>
+
+        <h2 id="0-architecture-overview">0. Architecture Overview</h2>
+
+        <p>To better understand how <code>libfitness</code> is structured and how it integrates with your Android application, refer to the following block diagrams.</p>
+
+        <h3 id="01-internal-module-architecture">0.1 Internal Module Architecture</h3>
+        <p>This diagram illustrates the internal layering of the library. Each layer depends on the one below it.</p>
+        <div class="diagram-container">
+            <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+                <!-- Presentation Layer -->
+                <rect x="50" y="20" width="500" height="80" rx="10" fill="#e1f5fe" stroke="#01579b" stroke-width="2"/>
+                <text x="300" y="45" text-anchor="middle" font-weight="bold" font-family="sans-serif">Presentation Layer</text>
+                <rect x="100" y="55" width="180" height="30" rx="5" fill="#fff" stroke="#01579b"/>
+                <text x="190" y="75" text-anchor="middle" font-size="12" font-family="sans-serif">Voyager Screens</text>
+                <path d="M 280 70 L 320 70" stroke="#01579b" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+                <rect x="320" y="55" width="180" height="30" rx="5" fill="#fff" stroke="#01579b"/>
+                <text x="410" y="75" text-anchor="middle" font-size="12" font-family="sans-serif">Compose UI Components</text>
+
+                <!-- Feature Layer -->
+                <rect x="50" y="140" width="500" height="100" rx="10" fill="#f3e5f5" stroke="#4a148c" stroke-width="2"/>
+                <text x="300" y="165" text-anchor="middle" font-weight="bold" font-family="sans-serif">Feature Layer</text>
+                <rect x="70" y="180" width="100" height="40" rx="5" fill="#fff" stroke="#4a148c"/>
+                <text x="120" y="205" text-anchor="middle" font-size="10" font-family="sans-serif">Registration</text>
+                <rect x="185" y="180" width="110" height="40" rx="5" fill="#fff" stroke="#4a148c"/>
+                <text x="240" y="205" text-anchor="middle" font-size="10" font-family="sans-serif">Workout Planning</text>
+                <rect x="310" y="180" width="100" height="40" rx="5" fill="#fff" stroke="#4a148c"/>
+                <text x="360" y="205" text-anchor="middle" font-size="10" font-family="sans-serif">Data Collection</text>
+                <rect x="425" y="180" width="105" height="40" rx="5" fill="#fff" stroke="#4a148c"/>
+                <text x="477" y="205" text-anchor="middle" font-size="10" font-family="sans-serif">Publishing/Strava</text>
+
+                <!-- Data Layer -->
+                <rect x="50" y="280" width="500" height="100" rx="10" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+                <text x="300" y="305" text-anchor="middle" font-weight="bold" font-family="sans-serif">Data Layer</text>
+                <rect x="70" y="320" width="100" height="40" rx="5" fill="#fff" stroke="#1b5e20"/>
+                <text x="120" y="345" text-anchor="middle" font-size="10" font-family="sans-serif">SQLDelight DB</text>
+                <rect x="185" y="320" width="110" height="40" rx="5" fill="#fff" stroke="#1b5e20"/>
+                <text x="240" y="345" text-anchor="middle" font-size="10" font-family="sans-serif">Ktor API Client</text>
+                <rect x="310" y="320" width="100" height="40" rx="5" fill="#fff" stroke="#1b5e20"/>
+                <text x="360" y="345" text-anchor="middle" font-size="10" font-family="sans-serif">BLE Sensor Drivers</text>
+                <rect x="425" y="320" width="105" height="40" rx="5" fill="#fff" stroke="#1b5e20"/>
+                <text x="477" y="345" text-anchor="middle" font-size="10" font-family="sans-serif">Asset Providers</text>
+
+                <!-- Core Layer -->
+                <rect x="50" y="420" width="500" height="60" rx="10" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+                <text x="300" y="445" text-anchor="middle" font-weight="bold" font-family="sans-serif">Core Layer</text>
+                <text x="300" y="465" text-anchor="middle" font-size="12" font-family="sans-serif">Domain Models | Dispatcher Provider | Common Utilities</text>
+
+                <!-- Connecting Arrows -->
+                <path d="M 300 100 L 300 140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-head)"/>
+                <path d="M 300 240 L 300 280" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-head)"/>
+                <path d="M 300 380 L 300 420" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-head)"/>
+
+                <!-- Arrow Definitions -->
+                <defs>
+                    <marker id="arrow-head" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                    </marker>
+                    <marker id="arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#01579b" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <h3 id="02-integration-flow">0.2 Integration Flow</h3>
+        <p>This diagram shows the lifecycle of the library from initialization in the Android app to active usage in the UI.</p>
+        <div class="diagram-container">
+            <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                <!-- Participants -->
+                <line x1="100" y1="50" x2="100" y2="450" stroke="#ccc" stroke-dasharray="5,5"/>
+                <line x1="300" y1="50" x2="300" y2="450" stroke="#ccc" stroke-dasharray="5,5"/>
+                <line x1="500" y1="50" x2="500" y2="450" stroke="#ccc" stroke-dasharray="5,5"/>
+                <line x1="700" y1="50" x2="700" y2="450" stroke="#ccc" stroke-dasharray="5,5"/>
+
+                <rect x="50" y="20" width="100" height="30" rx="5" fill="#f6f8fa" stroke="#333"/>
+                <text x="100" y="40" text-anchor="middle" font-size="12" font-family="sans-serif">Android App</text>
+                
+                <rect x="250" y="20" width="100" height="30" rx="5" fill="#f6f8fa" stroke="#333"/>
+                <text x="300" y="40" text-anchor="middle" font-size="12" font-family="sans-serif">libfitness</text>
+
+                <rect x="450" y="20" width="100" height="30" rx="5" fill="#f6f8fa" stroke="#333"/>
+                <text x="500" y="40" text-anchor="middle" font-size="12" font-family="sans-serif">Koin (DI)</text>
+
+                <rect x="650" y="20" width="100" height="30" rx="5" fill="#f6f8fa" stroke="#333"/>
+                <text x="700" y="40" text-anchor="middle" font-size="12" font-family="sans-serif">Compose UI</text>
+
+                <!-- Step 1: initializeApp -->
+                <path d="M 100 80 L 300 80" stroke="#333" stroke-width="2" fill="none" marker-end="url(#seq-arrow)"/>
+                <text x="200" y="75" text-anchor="middle" font-size="10" font-family="sans-serif">initializeApp()</text>
+
+                <!-- Step 2: startKoin -->
+                <path d="M 300 110 L 500 110" stroke="#333" stroke-width="2" fill="none" marker-end="url(#seq-arrow)"/>
+                <text x="400" y="105" text-anchor="middle" font-size="10" font-family="sans-serif">startKoin { ... }</text>
+
+                <!-- Step 3: Storage Init -->
+                <path d="M 300 140 L 500 140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#seq-arrow)"/>
+                <text x="400" y="135" text-anchor="middle" font-size="10" font-family="sans-serif">Database.initialize()</text>
+
+                <!-- Step 4: DB Ready -->
+                <path d="M 500 170 L 300 170" stroke="#666" stroke-width="1" stroke-dasharray="2,2" fill="none" marker-end="url(#seq-arrow-gray)"/>
+                <text x="400" y="165" text-anchor="middle" font-size="10" fill="#666" font-family="sans-serif">Database Ready</text>
+
+                <!-- Step 5: Init Complete -->
+                <path d="M 300 200 L 100 200" stroke="#666" stroke-width="1" stroke-dasharray="2,2" fill="none" marker-end="url(#seq-arrow-gray)"/>
+                <text x="200" y="195" text-anchor="middle" font-size="10" fill="#666" font-family="sans-serif">Initialization Complete</text>
+
+                <!-- Step 6: setContent -->
+                <path d="M 100 250 L 700 250" stroke="#333" stroke-width="2" fill="none" marker-end="url(#seq-arrow)"/>
+                <text x="400" y="245" text-anchor="middle" font-size="10" font-family="sans-serif">setContent { MainScreen() }</text>
+
+                <!-- Step 7: Resolve Service -->
+                <path d="M 700 290 L 500 290" stroke="#333" stroke-width="2" fill="none" marker-end="url(#seq-arrow)"/>
+                <text x="600" y="285" text-anchor="middle" font-size="10" font-family="sans-serif">AppComponent.get&lt;Service&gt;()</text>
+
+                <!-- Step 8: Return Instance -->
+                <path d="M 500 320 L 700 320" stroke="#666" stroke-width="1" stroke-dasharray="2,2" fill="none" marker-end="url(#seq-arrow-gray)"/>
+                <text x="600" y="315" text-anchor="middle" font-size="10" fill="#666" font-family="sans-serif">Service Instance</text>
+
+                <!-- Step 9: Observe -->
+                <circle cx="700" cy="360" r="10" fill="#e1f5fe" stroke="#01579b"/>
+                <text x="720" y="365" text-anchor="start" font-size="10" font-family="sans-serif">Observe Flow/State</text>
+
+                <!-- Arrow Definitions -->
+                <defs>
+                    <marker id="seq-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                    </marker>
+                    <marker id="seq-arrow-gray" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <h2 id="1-project-setup--dependency-configuration">1. Project Setup &amp; Dependency Configuration</h2>
+
+        <h3 id="11-including-the-library">1.1 Including the Library</h3>
+
+        <p>There are two primary ways to include <code>libfitness</code> in your Android project during development:</p>
+
+        <h4 id="option-a-module-dependency-recommended-for-development">Option A: Module Dependency (Recommended for Development)</h4>
+        <p>If you have the <code>libfitness</code> source code in the same repository or as a git submodule, you can include it directly in your <code>settings.gradle.kts</code>:</p>
+
+        <pre><code>include(":libfitness")
+project(":libfitness").projectDir = file("../path-to-libfitness/libfitness")</code></pre>
+
+        <p>Then, in your Android app's <code>build.gradle.kts</code>:</p>
+
+        <pre><code>dependencies {
+    implementation(project(":libfitness"))
+}</code></pre>
+
+        <h4 id="option-b-local-publication-maven-local">Option B: Local Publication (Maven Local)</h4>
+        <p>You can publish the library to your local Maven repository:</p>
+
+        <ol>
+            <li>In the <code>libfitness</code> project, run:
+                <pre><code>./gradlew :libfitness:publishToMavenLocal</code></pre>
+            </li>
+            <li>In your Android project's <code>settings.gradle.kts</code>, ensure <code>mavenLocal()</code> is included in the repositories:
+                <pre><code>dependencyResolutionManagement {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+    }
+}</code></pre>
+            </li>
+            <li>In your app's <code>build.gradle.kts</code>, add the dependency:
+                <pre><code>dependencies {
+    implementation("com.skjline.fitness:libfitness:0.1.0-SNAPSHOT")
+}</code></pre>
+            </li>
+        </ol>
+
+        <h3 id="12-mandatory-gradle-plugins">1.2 Mandatory Gradle Plugins</h3>
+
+        <p>To correctly support the shared UI and data layers, your Android application's <code>build.gradle.kts</code> (or the root <code>build.gradle.kts</code>) must include the following plugins:</p>
+
+        <pre><code>plugins {
+    id("com.android.application")
+    kotlin("android")
+    
+    // Required for Compose Multiplatform UI
+    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
+    
+    // Optional: Required if you use SQLDelight in the host app
+    alias(libs.plugins.sqldelight)
+    
+    // Optional: Required for Kotlinx Serialization
+    alias(libs.plugins.kotlinx.serialization)
+}</code></pre>
+
+        <blockquote>
+            <p><strong>Note:</strong> Ensure the versions of these plugins match those used in <code>libfitness</code> to avoid binary compatibility issues.</p>
+        </blockquote>
+
+        <h3 id="13-essential-dependencies">1.3 Essential Dependencies</h3>
+
+        <p>While <code>libfitness</code> bundles most of its dependencies, your Android app may need to explicitly declare some of them if you intend to interact with the shared logic or UI directly.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Library</th>
+                    <th>Purpose</th>
+                    <th>Implementation (App <code>build.gradle.kts</code>)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Koin</strong></td>
+                    <td>Dependency Injection &amp; Initialization</td>
+                    <td><code>implementation(libs.koin.android)</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Compose</strong></td>
+                    <td>Hosting shared UI in Activities</td>
+                    <td><code>implementation(libs.androidx.activity.compose)</code></td>
+                </tr>
+                <tr>
+                    <td><strong>SQLDelight</strong></td>
+                    <td>Providing the Android SQL driver</td>
+                    <td><code>implementation(libs.sqldelight.android)</code></td>
+                </tr>
+                <tr>
+                    <td><strong>Ktor</strong></td>
+                    <td>Configuring the OkHttp engine</td>
+                    <td><code>implementation(libs.ktor.okhttp)</code></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <blockquote>
+            <p><strong>Tip:</strong> Using the same versions as <code>libfitness</code> (via a shared Version Catalog) is highly recommended to avoid <code>Duplicate class</code> errors or binary incompatibilities.</p>
+        </blockquote>
+
+        <h2 id="2-library-initialization--di-integration">2. Library Initialization &amp; DI Integration</h2>
+
+        <h3 id="21-basic-initialization">2.1 Basic Initialization</h3>
+
+        <p>To initialize <code>libfitness</code>, you should call <code>initializeApp</code> in your Android <code>Application</code> class. This bootstraps the shared Koin DI container and prepares the internal database.</p>
+
+        <p>You will need to provide:</p>
+        <ol>
+            <li>A <code>FitProcessor</code> (for handling .fit file encoding/decoding).</li>
+            <li>A <code>Launcher</code> (for handling navigation).</li>
+        </ol>
+
+        <pre><code>class MyFitnessApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        initializeApp(
+            processor = MyFitProcessor(), // Your implementation of FitProcessor
+            launcher = DefaultLauncher(), // Or your implementation of Launcher
+        ) {
+            // Android-specific Koin configuration
+            androidContext(this@MyFitnessApp)
+            androidLogger()
+        }
+    }
+}</code></pre>
+
+        <h3 id="22-providing-android-context">2.2 Providing Android Context</h3>
+
+        <p>Many parts of <code>libfitness</code> (especially the SQLDelight database and certain platform-specific features) require an Android <code>Context</code>. You <strong>must</strong> provide this context during initialization via the <code>block</code> parameter.</p>
+
+        <p>Failure to provide the context will result in a <code>Koin</code> exception when the database driver is created.</p>
+
+        <pre><code>initializeApp(
+    processor = MyFitProcessor(),
+    launcher = DefaultLauncher(),
+) {
+    // CRITICAL: Provide the application context
+    androidContext(this@MyFitnessApp)
+    
+    // Optional: Enable Koin logging for easier debugging
+    androidLogger()
+}</code></pre>
+
+        <h3 id="23-resolving-dependencies-with-appcomponent">2.3 Resolving Dependencies with <code>AppComponent</code></h3>
+
+        <p><code>libfitness</code> uses <code>AppComponent</code> as a central entry point to resolve shared dependencies. This is particularly useful when you need to access shared logic (like repositories or services) from native Android code (e.g., in a native ViewModel or a WorkManager task).</p>
+
+        <p>Because <code>AppComponent</code> implements <code>KoinComponent</code>, you can use it to fetch any instance registered in the Koin container.</p>
+
+        <pre><code>// In your Android native code
+val storage = AppComponent.get&lt;StorageDatabase&gt;()
+val dispatcherProvider = AppComponent.get&lt;DispatcherProvider&gt;()</code></pre>
+
+        <h4 id="common-dependencies-to-resolve">Common Dependencies to Resolve:</h4>
+        <ul>
+            <li><strong><code>StorageDatabase</code></strong>: The main entry point for data persistence.</li>
+            <li><strong><code>DispatcherProvider</code></strong>: Provides Coroutine dispatchers (IO, Main, Default) consistent with the library's threading model.</li>
+            <li><strong><code>Launcher</code></strong>: The shared navigator instance.</li>
+            <li><strong><code>FitProcessor</code></strong>: The file processor you provided during initialization.</li>
+        </ul>
+
+        <blockquote>
+            <p><strong>Note:</strong> Dependency resolution via <code>AppComponent</code> will only work <strong>after</strong> <code>initializeApp</code> has been called.</p>
+        </blockquote>
+
+        <h3 id="24-key-interfaces">2.4 Key Interfaces</h3>
+
+        <h4 id="the-launcher-interface">The <code>Launcher</code> Interface</h4>
+        <p>The <code>Launcher</code> is responsible for navigating between screens.</p>
+
+        <pre><code>interface Launcher {
+    fun launch(route: Route)
+}</code></pre>
+
+        <h4 id="the-fitprocessor-interface">The <code>FitProcessor</code> Interface</h4>
+        <p>The <code>FitProcessor</code> handles file I/O for fitness data. You must provide an implementation suitable for Android (e.g., using <code>context.openFileOutput</code>).</p>
+
+        <pre><code>interface FitProcessor {
+    fun processFitFileData(filename: String, content: FitContent): FileCreateResult
+    fun loadFitFile(filename: String): ByteArray
+}</code></pre>
+
+        <h3 id="25-implementation-examples">2.5 Implementation Examples</h3>
+
+        <h4 id="custom-launcher-implementation">Custom <code>Launcher</code> Implementation</h4>
+        <p>If you want to handle navigation using standard Android <code>Intent</code>s or a specific navigation library:</p>
+
+        <pre><code>class AndroidLauncher(private val context: Context) : Launcher {
+    override fun launch(route: Route) {
+        when (route) {
+            is Route.MainRoute -&gt; {
+                val intent = Intent(context, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+            }
+            // Handle other routes...
+        }
+    }
+}</code></pre>
+
+        <h4 id="custom-fitprocessor-implementation">Custom <code>FitProcessor</code> Implementation</h4>
+        <p>A basic implementation that saves and loads <code>.fit</code> files from the app's internal storage:</p>
+
+        <pre><code>class AndroidFitProcessor(private val context: Context) : FitProcessor {
+    override fun processFitFileData(filename: String, content: FitContent): FileCreateResult {
+        return try {
+            val file = File(context.filesDir, filename)
+            file.writeBytes(content.toByteArray())
+            FileCreateResult.Success(file.absolutePath)
+        } catch (e: Exception) {
+            FileCreateResult.Failed(e.message ?: "Unknown error")
+        }
+    }
+
+    override fun loadFitFile(filename: String): ByteArray {
+        val file = File(context.filesDir, filename)
+        return if (file.exists()) file.readBytes() else byteArrayOf()
+    }
+}</code></pre>
+
+        <h2 id="3-shared-ui-integration-compose-multiplatform--voyager">3. Shared UI Integration (Compose Multiplatform &amp; Voyager)</h2>
+
+        <p><code>libfitness</code> uses <strong>Compose Multiplatform</strong> for its UI and <strong>Voyager</strong> for navigation. You can host shared screens directly within your Android <code>Activity</code>.</p>
+
+        <h3 id="31-hosting-a-shared-screen">3.1 Hosting a Shared Screen</h3>
+
+        <p>To show a shared screen in your Android Activity, use <code>ComponentActivity.setContent</code> and wrap the shared Composable.</p>
+
+        <pre><code>class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        setContent {
+            // 1. Apply your app's theme (or the shared library's theme)
+            FitnessTheme {
+                // 2. Initialize the shared Navigator with a starting Screen
+                Navigator(screen = ScreenWorkout()) { navigator -&gt;
+                    // 3. Apply shared transitions (optional)
+                    SlideTransition(navigator)
+                }
+            }
+        }
+    }
+}</code></pre>
+
+        <h4 id="available-common-screens">Available Common Screens:</h4>
+        <ul>
+            <li><code>ScreenHome()</code>: The dashboard/home screen.</li>
+            <li><code>ScreenWorkout()</code>: The workout planning/selection screen.</li>
+            <li><code>ScreenProfile()</code>: User settings and profile.</li>
+            <li><code>SessionActivityScreen(path: String)</code>: The active tracking/telemetry screen.</li>
+        </ul>
+
+        <h3 id="32-requirements-for-setcontent">3.2 Requirements for <code>setContent</code></h3>
+
+        <p>When hosting shared components in your Android Activity, ensure the following requirements are met within the <code>setContent</code> block:</p>
+
+        <h4 id="1-theme-application">1. Theme Application</h4>
+        <p>While many shared screens (like <code>MainScreen</code>) wrap themselves in a <code>MaterialTheme</code>, it is best practice to provide a consistent theme at the root of your Activity. This ensures that any system-level UI (like Dialogs or Scaffolds) uses your app's branding.</p>
+
+        <pre><code>setContent {
+    MaterialTheme { // Or your custom MyComposeTheme { ... }
+        MainScreen()
+    }
+}</code></pre>
+
+        <h4 id="2-koin-context-compose">2. Koin Context (Compose)</h4>
+        <p>If you intend to use Koin-specific Compose features (like <code>koinViewModel()</code> or <code>getKoin()</code>) within your native code that interops with the library, you should wrap your UI in <code>KoinContext</code>.</p>
+
+        <pre><code>setContent {
+    KoinContext { // Provides the Koin instance to the Compose tree
+        FitnessTheme {
+            Navigator(ScreenWorkout())
+        }
+    }
+}</code></pre>
+
+        <h4 id="3-image--vector-resources">3. Image &amp; Vector Resources</h4>
+        <p><code>libfitness</code> uses the <code>jetbrains.compose.resources</code> library. Ensure your Android app has the necessary resource generation enabled in its <code>build.gradle.kts</code>:</p>
+
+        <pre><code>compose.resources {
+    generateResClass = auto
+}</code></pre>
+
+        <h4 id="4-handling-insets">4. Handling Insets</h4>
+        <p>Shared screens often use <code>Scaffold</code> or <code>Modifier.windowInsetsPadding</code>. To ensure the UI respects the status bar and navigation bar, your Activity should call <code>enableEdgeToEdge()</code> before <code>setContent</code>.</p>
+
+        <pre><code>override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent { 
+        MainScreen()
+    }
+}</code></pre>
+
+        <h3 id="33-handling-multi-platform-resources-images-strings">3.3 Handling Multi-platform Resources (Images, Strings)</h3>
+
+        <p><code>libfitness</code> uses the <strong>Compose Multiplatform Resources</strong> library (<code>org.jetbrains.compose.resources</code>). This allows images, strings, and other assets to be shared across platforms.</p>
+
+        <h4 id="accessing-shared-resources-in-android">Accessing Shared Resources in Android</h4>
+        <p>When the library is integrated, it generates a <code>Res</code> object (usually under the library's package) that you can use in your native Compose code.</p>
+
+        <pre><code>import com.skjline.fitness.resources.Res
+import com.skjline.fitness.resources.ic_bike
+import org.jetbrains.compose.resources.vectorResource
+import org.jetbrains.compose.resources.stringResource
+
+@Composable
+fun NativeAndroidView() {
+    // Accessing a shared vector image
+    val bikeIcon = vectorResource(Res.drawable.ic_bike)
+    
+    // Accessing a shared string (if defined in commonMain)
+    // val appName = stringResource(Res.string.app_name)
+    
+    Icon(imageVector = bikeIcon, contentDescription = null)
+}</code></pre>
+
+        <h4 id="important-configuration">Important Configuration</h4>
+        <p>To ensure the host Android app can correctly link and use these shared resources, ensure your app's <code>build.gradle.kts</code> has the <code>jetbrainsCompose</code> plugin applied:</p>
+
+        <pre><code>plugins {
+    alias(libs.plugins.jetbrainsCompose)
+}</code></pre>
+
+        <blockquote>
+            <p><strong>Note:</strong> Shared resources are stored in <code>commonMain/composeResources</code>. During the Android build process, these are automatically merged into the final APK's assets/resources.</p>
+        </blockquote>
+
+        <h3 id="34-handling-navigation-the-launcher-connection">3.4 Handling Navigation (The <code>Launcher</code> Connection)</h3>
+
+        <p>When a shared screen triggers a navigation event (e.g., clicking "Start Workout"), it uses the <code>Launcher</code> implementation you provided during <code>initializeApp</code>.</p>
+
+        <p>If you use <code>DefaultLauncher</code>, it will attempt to navigate within the shared <code>Navigator</code>. If you want to handle certain routes natively (e.g., opening a native Android Activity for Strava login), you should implement your own <code>Launcher</code>.</p>
+
+        <pre><code>class MyLauncher(private val navigator: Navigator) : Launcher {
+    override fun launch(route: Route) {
+        when (route) {
+            is Route.SessionRoute -&gt; navigator.push(SessionActivityScreen(route.path))
+            is Route.MainRoute -&gt; navigator.push(ScreenHome())
+            // Handle native-only routes
+            is RegistrationRoute -&gt; {
+                // Launch native Android Activity
+            }
+            else -&gt; { /* handle others */ }
+        }
+    }
+}</code></pre>
+
+        <blockquote>
+            <p><strong>Note:</strong> You can update the <code>Launcher</code> instance in the Koin container if you need to pass a reference to the <code>Navigator</code> created in your Activity.</p>
+        </blockquote>
+
+        <h2 id="4-business-logic-consumption-repositories--services">4. Business Logic Consumption (Repositories &amp; Services)</h2>
+
+        <p>For custom UI implementations, you can access the shared business logic directly via <code>AppComponent</code>.</p>
+
+        <h3 id="41-key-services--repositories">4.1 Key Services &amp; Repositories</h3>
+
+        <h4 id="storagedatabase-persistence"><code>StorageDatabase</code> (Persistence)</h4>
+        <p>Used for managing user profiles and local app state.</p>
+
+        <pre><code>val db = AppComponent.get&lt;StorageDatabase&gt;()
+
+// Get a user profile property
+val profile = db.getUserProfile("user_name")
+
+// Update a property
+db.insertOrUpdateUserProfile("user_name", "John Doe")</code></pre>
+
+        <h4 id="bluetoothsearchservice-ble-scanning"><code>BluetoothSearchService</code> (BLE Scanning)</h4>
+        <p>Used to discover and connect to fitness sensors (HRM, Trainers).</p>
+
+        <pre><code>val bleService = AppComponent.get&lt;BluetoothSearchService&gt;()
+
+// Observe the scan state
+lifecycleScope.launch {
+    bleService.scanDeviceState.collect { operation -&gt;
+        when (operation) {
+            is OnDeviceUpdated -&gt; {
+                val devices = operation.devices
+                // Update your native UI list
+            }
+            is ScanError -&gt; { /* Handle error */ }
+        }
+    }
+}
+
+// Start scanning
+bleService.startScanning()</code></pre>
+
+        <h4 id="datacollectionservice-workout-sessions"><code>DataCollectionService</code> (Workout Sessions)</h4>
+        <p>The core engine for active workout sessions and telemetry.</p>
+
+        <pre><code>val collector = AppComponent.get&lt;DataCollectionService&gt;()
+
+// Start a session with a training course
+collector.beginSession(myMrcCourse)
+
+// Observe real-time data packets (Power, Cadence, HR)
+lifecycleScope.launch {
+    collector.collect().collect { packet -&gt;
+        when (packet.type) {
+            PacketType.Power -&gt; { /* update power UI */ }
+            PacketType.HeartRate -&gt; { /* update HR UI */ }
+        }
+    }
+}</code></pre>
+
+        <h3 id="42-patterns-for-observing-shared-state">4.2 Patterns for Observing Shared State</h3>
+
+        <p>When consuming shared <code>Flow</code>s or <code>StateFlow</code>s in your native Android code, follow standard lifecycle-aware collection patterns to avoid memory leaks.</p>
+
+        <pre><code>class MyNativeViewModel : ViewModel() {
+    private val bleService = AppComponent.get&lt;BluetoothSearchService&gt;()
+    
+    val deviceList: StateFlow&lt;List&lt;BluetoothComponent&gt;&gt; = bleService.scanDeviceState
+        .map { if (it is OnDeviceUpdated) it.devices else emptyList() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+}</code></pre>
+
+        <p>In your Activity/Fragment:</p>
+
+        <pre><code>lifecycleScope.launch {
+    repeatOnLifecycle(Lifecycle.State.STARTED) {
+        viewModel.deviceList.collect { devices -&gt;
+            // Update UI
+        }
+    }
+}</code></pre>
+
+        <h2 id="5-summary--best-practices">5. Summary &amp; Best Practices</h2>
+
+        <ul>
+            <li><strong>Initialize Early:</strong> Always call <code>initializeApp</code> in your <code>Application.onCreate()</code>.</li>
+            <li><strong>Provide Context:</strong> Never forget <code>androidContext(this)</code> in the initialization block.</li>
+            <li><strong>Use AppComponent:</strong> It's the cleanest way to bridge shared logic into native Android components.</li>
+            <li><strong>Lifecycle Awareness:</strong> Use <code>repeatOnLifecycle</code> or <code>flowWithLifecycle</code> when observing shared flows in native code.</li>
+            <li><strong>Theme Consistency:</strong> Wrap shared screens in your app's theme to maintain a unified look and feel.</li>
+        </ul>
+    </div>
+</body>
+</html>

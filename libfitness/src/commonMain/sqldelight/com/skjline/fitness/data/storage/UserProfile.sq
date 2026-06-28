@@ -1,0 +1,22 @@
+CREATE TABLE UserProfileEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    data TEXT NOT NULL,
+    updated INTEGER NOT NULL
+);
+
+insert:
+INSERT OR REPLACE INTO UserProfileEntity(id, name, data, updated)
+VALUES(?, ?, ?, ?);
+
+getAll:
+SELECT * FROM UserProfileEntity;
+
+updateData:
+UPDATE UserProfileEntity
+SET data = :data
+WHERE id IS :id;
+
+delete:
+DELETE FROM UserProfileEntity
+WHERE id IS :id;

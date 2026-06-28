@@ -1,0 +1,75 @@
+[COURSE HEADER]
+VERSION = 2
+UNITS = ENGLISH
+DESCRIPTION = intervalos de 3x16 minutos over-under con valles de 1 minuto al 95% FTP y picos de 3 minutos que ascienden al 105% FTP, permanecen allí durante 1 minuto y luego regresan al 95% FTP.
+
+Las recuperaciones entre intervalos duran 9 minutos.
+FILE NAME = W03D4-Carpathian Peak +2
+MINUTES PERCENT
+[END COURSE HEADER]
+[COURSE DATA]
+0.00	50
+3.00	50
+3.00	62
+6.00	62
+6.00	77
+9.00	77
+9.00	90
+13.00	90
+13.00	40
+18.50	40
+18.50	95
+19.50	95
+19.50	105
+22.50	105
+22.50	95
+23.50	95
+23.50	105
+26.50	105
+26.50	95
+27.50	95
+27.50	105
+30.50	105
+30.50	95
+31.50	95
+31.50	105
+34.50	105
+34.50	40
+44.00	40
+44.00	95
+45.00	95
+45.00	105
+48.00	105
+48.00	95
+49.00	95
+49.00	105
+52.00	105
+52.00	95
+53.00	95
+53.00	105
+56.00	105
+56.00	95
+57.00	95
+57.00	105
+60.00	105
+60.00	40
+69.50	40
+69.50	95
+70.50	95
+70.50	105
+73.50	105
+73.50	95
+74.50	95
+74.50	105
+77.50	105
+77.50	95
+78.50	95
+78.50	105
+81.50	105
+81.50	95
+82.50	95
+82.50	105
+85.50	105
+85.50	40
+90.00	30
+[END COURSE DATA]

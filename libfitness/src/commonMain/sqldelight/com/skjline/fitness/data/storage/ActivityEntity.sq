@@ -1,0 +1,22 @@
+CREATE TABLE ActivityEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    start TEXT NOT NULL,
+    duration INTEGER NOT NULL,
+    power INTEGER,
+    heart INTEGER,
+    speed INTEGER,
+    cadence INTEGER
+);
+
+insert:
+INSERT OR REPLACE INTO ActivityEntity(id, name, description, start, duration, power, heart, speed, cadence)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+getAll:
+SELECT * FROM ActivityEntity;
+
+delete:
+DELETE FROM ActivityEntity
+WHERE id IS :id;

@@ -1,0 +1,159 @@
+<resources>
+    <string name="app_name">Skjline</string>
+
+    <string name="action_home">Home</string>
+    <string name="action_training">Training</string>
+    <string name="action_activity">Activity</string>
+    <string name="action_profile">Profile</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="home_fragment_label">Home</string>
+    <string name="train_plan_fragment_label">Train Plan</string>
+    <string name="calendar_fragment_label">Calendar</string>
+    <string name="activity_fragment_label">Session</string>
+    <string name="profile_fragment_label">My Profile</string>
+
+    <string name="home">Home</string>
+    <string name="activity">Activity</string>
+    <string name="trainer">Trainer</string>
+    <string name="explore_train_plan_fragment_label">Explore train plans</string>
+
+    <string name="trainee_name">Name</string>
+    <string name="today">Date</string>
+
+    <string name="fitness_header">My Fitness</string>
+    <string name="fitness">Fitness</string>
+    <string name="fatigue">Fatigue</string>
+    <string name="form">Form</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
+
+    <string name="view_graph">View Graph</string>
+
+    <string name="todays_training">Today's Training</string>
+    <string name="todays_training_start">Start Now</string>
+    <string name="adjust_workload">Adjusted Workload</string>
+
+    <string name="FTP">FTP</string>
+    <string name="TSS">TSS</string>
+
+    <string name="unit_watt">W</string>
+    <string name="unit_kpw">Kg/W</string>
+    <string name="unit_rpm">RPM</string>
+    <string name="unit_bpm">BPM</string>
+
+    <string name="unit_min">Min</string>
+    <string name="unit_sec">Sec</string>
+    <string name="unit_minute">Minute</string>
+    <string name="unit_second">Second</string>
+
+    <string name="average">Average</string>
+    <string name="max">Max</string>
+    <string name="min">Min</string>
+    <string name="IF">IF</string>
+    <string name="NP">NP</string>
+    <string name="power">Power</string>
+    <string name="hr">HR</string>
+    <string name="heart_rate">Heart Rate</string>
+    <string name="total_time">Total Time</string>
+    <string name="interval">Interval</string>
+    <string name="target_power">Target Power</string>
+
+    <string name="speed">Speed</string>
+    <string name="cadence">Cadence</string>
+
+    <string name="metric">Metric</string>
+    <string name="imperial">Imperial</string>
+
+    <string name="distance_metric">meters</string>
+    <string name="distance_imperial">miles</string>
+    <string name="weight_metric">kg</string>
+    <string name="weight_imperial">lb</string>
+
+    <string name="zone">Zone</string>
+    <string name="zone_x">Zone %1</string>
+    <string name="recovery">Recovery</string>
+    <string name="aerobic">Aerobic</string>
+    <string name="tempo">Tempo</string>
+    <string name="threshold">Threshold</string>
+    <string name="vo2max">VO2Max</string>
+    <string name="anaerobic">Anaerobic</string>
+    <string name="neuromuscular">Neuromuscular</string>
+
+    <string name="chart_characteristic_label">Characteristic</string>
+    <string name="chart_development_label">Development</string>
+
+    <string name="ble_devices_header">Training Devices</string>
+    <string name="ble_devices_session">Selected Session</string>
+    <string name="ble_devices_list">We found devices in below.\nPlease select any from the below and click start.</string>
+    <string name="ble_devices_list_searching">Please wait. We're looking for a device.</string>
+    <string name="ble_device_selected">Selected</string>
+    <string name="ble_device_not_available">Unfortunately, We were not able to find any device</string>
+
+    <string name="title_activity_session">SessionActivity</string>
+    <string name="session_title">Today's Training</string>
+
+    <string name="start">Start</string>
+    <string name="stop">Stop</string>
+    <string name="pause">Pause</string>
+    <string name="erg">ERG</string>
+
+    <string name="inc_10">10 +</string>
+    <string name="dec_10">10 -</string>
+
+    <string name="ext_app">External App</string>
+    <string name="connect_strava">Authorize</string>
+    <string name="reconnect_strava">Reauthorize</string>
+
+    <string name="app_greeting">Welcome to Skjline</string>
+    <string name="app_sign_in">Let's Sign-In</string>
+    <string name="app_reg_complete">That's all, let's start with your training.</string>
+
+    <string name="set_credential">Let's set your Username and Password</string>
+    <string name="username">Username (email)</string>
+    <string name="password">Password</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="register">Register</string>
+    <string name="sign_in">Sign In</string>
+
+    <string name="request_passcode">Email for recover your password</string>
+    <string name="request_passcode_label">Enter an email for the password recovery</string>
+    <string name="email_used">email address</string>
+    <string name="confirm_request_passcode">Request</string>
+    <string name="validate_passcode">Enter the passcode</string>
+    <string name="confirm_passcode">Validate</string>
+    <string name="request_passcode_again">Request passcode again</string>
+
+    <string name="set_password">Let's set your Password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="confirm_password_change">Change</string>
+
+    <string name="confirm_password_changed">Your password has been changed</string>
+    <string name="confirm">Sign In</string>
+
+    <string name="set_profile_title">Member Profile</string>
+    <string name="set_profile">Let's set your name and age</string>
+    <string name="Name">Name</string>
+    <string name="Age">age</string>
+
+    <string name="set_fitness_info_title">Fitness Profile</string>
+    <string name="set_fitness_info">Let's set your FTP and Weight</string>
+    <string name="whats_ftp">Functional Threshold Power</string>
+    <string name="set_ftp">95 Percent of the max output in watts for 20 minutes</string>
+    <string name="weight">Weight</string>
+
+    <string name="training_level_title">Training Levels</string>
+    <string name="training_level_description">How do we set Training Levels</string>
+    <string name="training_level_one">Beginner</string>
+    <string name="training_level_one_desc">A Person starting a structured training for the first time</string>
+    <string name="training_level_two">Novice</string>
+    <string name="training_level_two_desc">A Person has experienced a structured training at least once or is in a training</string>
+    <string name="training_level_three">Pro</string>
+    <string name="training_level_three_desc">A Person has experienced a various structured training and is capable of complete complex trainings</string>
+
+    <string name="next">Next</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="change_password_title">Change Password</string>
+</resources>

@@ -1,0 +1,29 @@
+CREATE TABLE ActivitySession (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    description TEXT,
+    sessionDate INTEGER NOT NULL,
+    duration INTEGER NOT NULL,
+    mrcFilename TEXT NOT NULL,
+    mrcFilepath TEXT NOT NULL
+);
+
+insert:
+INSERT OR REPLACE INTO ActivitySession(id, name, description, sessionDate, duration, mrcFilename, mrcFilepath)
+VALUES(?, ?, ?, ?, ?, ?, ?);
+
+getAll:
+SELECT * FROM ActivitySession;
+
+getByName:
+SELECT * FROM ActivitySession WHERE name = ?;
+
+getByDateRange:
+SELECT * FROM ActivitySession WHERE sessionDate > ? AND sessionDate < ?;
+
+delete:
+DELETE FROM ActivitySession
+WHERE id IS :id;
+
+deleteAll:
+DELETE FROM ActivitySession;

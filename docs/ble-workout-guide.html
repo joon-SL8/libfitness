@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BLE & Workout Integration Guide: libfitness</title>
+    <style>
+        :root {
+            --primary-color: #0366d6;
+            --text-color: #24292e;
+            --bg-color: #ffffff;
+            --code-bg: #f6f8fa;
+            --border-color: #e1e4e8;
+            --info-bg: #e6ffed;
+            --info-border: #28a745;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 45px;
+        }
+        @media (max-width: 767px) {
+            .container {
+                padding: 15px;
+            }
+        }
+        pre {
+            background-color: var(--code-bg);
+            padding: 16px;
+            overflow: auto;
+            font-size: 85%;
+            line-height: 1.45;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+        code {
+            font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            padding: 0.2em 0.4em;
+            margin: 0;
+            font-size: 85%;
+            background-color: rgba(27, 31, 35, 0.05);
+            border-radius: 6px;
+        }
+        pre code {
+            padding: 0;
+            margin: 0;
+            font-size: 100%;
+            word-break: normal;
+            white-space: pre;
+            background: transparent;
+            border: 0;
+        }
+        h1, h2, h3, h4 {
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }
+        h1 { font-size: 2em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+        h2 { font-size: 1.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+        h3 { font-size: 1.25em; }
+        p { margin-top: 0; margin-bottom: 16px; }
+        a { color: var(--primary-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .toc {
+            background-color: var(--code-bg);
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-bottom: 32px;
+        }
+        .toc h2 {
+            margin-top: 0;
+            border-bottom: none;
+            font-size: 1.25em;
+        }
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+        .toc ul ul {
+            padding-left: 1.5em;
+            margin-top: 0.25em;
+        }
+        .diagram-container {
+            margin: 24px 0;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+        }
+        .diagram-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .info-box {
+            background-color: var(--info-bg);
+            border: 1px solid var(--info-border);
+            padding: 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        .info-box h4 {
+            margin-top: 0;
+            color: #22863a;
+        }
+        blockquote {
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid var(--border-color);
+            margin: 0 0 16px 0;
+        }
+        ul, ol { padding-left: 2em; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="ble--workout-integration-guide">BLE &amp; Workout Integration Guide</h1>
+
+        <p>This guide provides a technical deep-dive into the "Happy Path" for managing BLE sensors and executing structured workout sessions using the <code>libfitness</code> library. It focuses on the orchestration between discovery, connection, and real-time power control.</p>
+
+        <nav class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                <li><a href="#1-visual-deep-dive">1. Visual Deep Dive</a>
+                    <ul>
+                        <li><a href="#11-sequence-diagram-discovery--connection">1.1 Sequence: Discovery &amp; Connection</a></li>
+                        <li><a href="#12-data-flow-mrc-to-hardware">1.2 Data Flow: MRC to Hardware</a></li>
+                        <li><a href="#13-state-lifecycle">1.3 State Lifecycle</a></li>
+                    </ul>
+                </li>
+                <li><a href="#2-integration-roadmap">2. Integration Roadmap</a>
+                    <ul>
+                        <li><a href="#21-discovery-phase">2.1 Discovery Phase</a></li>
+                        <li><a href="#22-connection-phase">2.2 Connection Phase</a></li>
+                        <li><a href="#23-workout-setup">2.3 Workout Setup</a></li>
+                        <li><a href="#24-session-execution">2.4 Session Execution</a></li>
+                    </ul>
+                </li>
+                <li><a href="#3-architecture-best-practices">3. Architecture Best Practices</a></li>
+            </ul>
+        </nav>
+
+        <section id="1-visual-deep-dive">
+            <h2>1. Visual Deep Dive</h2>
+            
+            <h3 id="11-sequence-diagram-discovery--connection">1.1 Sequence: Discovery &amp; Connection</h3>
+            <div id="diagram-sequence" class="diagram-container">
+                <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Lifelines -->
+                    <line x1="100" y1="50" x2="100" y2="400" stroke="#ccc" stroke-dasharray="5,5"/>
+                    <line x1="300" y1="50" x2="300" y2="400" stroke="#ccc" stroke-dasharray="5,5"/>
+                    <line x1="550" y1="50" x2="550" y2="400" stroke="#ccc" stroke-dasharray="5,5"/>
+                    <line x1="750" y1="50" x2="750" y2="400" stroke="#ccc" stroke-dasharray="5,5"/>
+
+                    <!-- Labels -->
+                    <rect x="50" y="10" width="100" height="30" rx="5" fill="#f6f8fa" stroke="#333"/>
+                    <text x="100" y="30" text-anchor="middle" font-size="12" font-family="sans-serif">Host App</text>
+                    
+                    <rect x="230" y="10" width="140" height="30" rx="5" fill="#e1f5fe" stroke="#01579b"/>
+                    <text x="300" y="30" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">BLESearchService</text>
+
+                    <rect x="480" y="10" width="140" height="30" rx="5" fill="#f3e5f5" stroke="#4a148c"/>
+                    <text x="550" y="30" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">BikeTrainerSensor</text>
+
+                    <rect x="700" y="10" width="100" height="30" rx="5" fill="#f6f8fa" stroke="#333"/>
+                    <text x="750" y="30" text-anchor="middle" font-size="12" font-family="sans-serif">Hardware</text>
+
+                    <!-- Interaction 1: Start Scanning -->
+                    <path d="M 100 80 L 300 80" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-tip)"/>
+                    <text x="200" y="75" text-anchor="middle" font-size="10" font-family="sans-serif">startScanning()</text>
+
+                    <!-- Interaction 2: Observe State -->
+                    <path d="M 100 110 L 300 110" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-tip)"/>
+                    <text x="200" y="105" text-anchor="middle" font-size="10" font-family="sans-serif">collect { scanDeviceState }</text>
+
+                    <!-- Interaction 3: Advertisement -->
+                    <path d="M 750 140 L 300 140" stroke="#666" stroke-width="1" stroke-dasharray="2,2" fill="none" marker-end="url(#arrow-tip-gray)"/>
+                    <text x="525" y="135" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#666">BLE Advertisement</text>
+
+                    <!-- Interaction 4: Device Updated -->
+                    <path d="M 300 170 L 100 170" stroke="#01579b" stroke-width="2" fill="none" marker-end="url(#arrow-tip-blue)"/>
+                    <text x="200" y="165" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#01579b">emit(OnDeviceUpdated)</text>
+
+                    <!-- Interaction 5: Connect -->
+                    <path d="M 100 220 L 300 220" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-tip)"/>
+                    <text x="200" y="215" text-anchor="middle" font-size="10" font-family="sans-serif">connectToDevice(item)</text>
+
+                    <!-- Interaction 6: Instantiate Sensor -->
+                    <path d="M 300 250 L 550 250" stroke="#4a148c" stroke-width="2" fill="none" marker-end="url(#arrow-tip-purple)"/>
+                    <text x="425" y="245" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#4a148c">create(BikeTrainerSensor)</text>
+
+                    <!-- Interaction 7: Hardware Handshake -->
+                    <path d="M 550 290 L 750 290" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-tip)"/>
+                    <text x="650" y="285" text-anchor="middle" font-size="10" font-family="sans-serif">Gatt Connect / FMCP Control</text>
+
+                    <!-- Interaction 8: Connected State -->
+                    <path d="M 550 330 L 100 330" stroke="#1b5e20" stroke-width="2" fill="none" marker-end="url(#arrow-tip-green)"/>
+                    <text x="325" y="325" text-anchor="middle" font-size="10" font-family="sans-serif" fill="#1b5e20">emit(Connected)</text>
+
+                    <!-- Interaction 9: Data Updates -->
+                    <path d="M 750 370 L 550 370" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrow-tip)"/>
+                    <text x="650" y="365" text-anchor="middle" font-size="10" font-family="sans-serif">Notifications (Power/RPM)</text>
+
+                    <!-- Arrow Definitions -->
+                    <defs>
+                        <marker id="arrow-tip" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                        </marker>
+                        <marker id="arrow-tip-gray" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+                        </marker>
+                        <marker id="arrow-tip-blue" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#01579b" />
+                        </marker>
+                        <marker id="arrow-tip-purple" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#4a148c" />
+                        </marker>
+                        <marker id="arrow-tip-green" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#1b5e20" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <h3 id="12-data-flow-mrc-to-hardware">1.2 Data Flow: MRC to Hardware</h3>
+            <div id="diagram-dataflow" class="diagram-container">
+                <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Nodes -->
+                    <rect x="50" y="100" width="120" height="60" rx="10" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+                    <text x="110" y="135" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">MRC File</text>
+                    
+                    <rect x="230" y="100" width="160" height="60" rx="10" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+                    <text x="310" y="125" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">TargetPower</text>
+                    <text x="310" y="145" text-anchor="middle" font-size="10" font-family="sans-serif">DataTimer</text>
+
+                    <rect x="450" y="100" width="160" height="60" rx="10" fill="#e1f5fe" stroke="#01579b" stroke-width="2"/>
+                    <text x="530" y="125" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">DataCollection</text>
+                    <text x="530" y="145" text-anchor="middle" font-size="10" font-family="sans-serif">Service</text>
+
+                    <rect x="670" y="100" width="110" height="60" rx="10" fill="#f3e5f5" stroke="#4a148c" stroke-width="2"/>
+                    <text x="725" y="125" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">BikeTrainer</text>
+                    <text x="725" y="145" text-anchor="middle" font-size="10" font-family="sans-serif">Sensor</text>
+
+                    <!-- Flows -->
+                    <path d="M 170 130 L 230 130" stroke="#333" stroke-width="2" fill="none" marker-end="url(#flow-arrow)"/>
+                    <text x="200" y="120" text-anchor="middle" font-size="9" font-family="sans-serif">Parse Course</text>
+
+                    <path d="M 390 130 L 450 130" stroke="#333" stroke-width="2" fill="none" marker-end="url(#flow-arrow)"/>
+                    <text x="420" y="120" text-anchor="middle" font-size="9" font-family="sans-serif">Emit Packet</text>
+
+                    <path d="M 610 130 L 670 130" stroke="#333" stroke-width="2" fill="none" marker-end="url(#flow-arrow)"/>
+                    <text x="640" y="120" text-anchor="middle" font-size="9" font-family="sans-serif">SetTargetPower</text>
+
+                    <!-- Data Description -->
+                    <text x="310" y="190" text-anchor="middle" font-size="10" font-style="italic" fill="#666">Calculates Target Watts</text>
+                    <text x="310" y="205" text-anchor="middle" font-size="10" font-style="italic" fill="#666">based on FTP %</text>
+
+                    <text x="530" y="190" text-anchor="middle" font-size="10" font-style="italic" fill="#666">Orchestrates internal loop</text>
+                    <text x="530" y="205" text-anchor="middle" font-size="10" font-style="italic" fill="#666">at 1Hz frequency</text>
+
+                    <text x="725" y="190" text-anchor="middle" font-size="10" font-style="italic" fill="#666">Writes FMCP</text>
+                    <text x="725" y="205" text-anchor="middle" font-size="10" font-style="italic" fill="#666">Gatt Characteristic</text>
+
+                    <!-- Definitions -->
+                    <defs>
+                        <marker id="flow-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
+            <h3 id="13-state-lifecycle">1.3 State Lifecycle</h3>
+            <div id="diagram-state" class="diagram-container">
+                <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- States -->
+                    <circle cx="100" cy="150" r="40" fill="#f6f8fa" stroke="#333" stroke-width="2"/>
+                    <text x="100" y="155" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">Idle</text>
+                    
+                    <rect x="220" y="110" width="120" height="80" rx="15" fill="#e1f5fe" stroke="#01579b" stroke-width="2"/>
+                    <text x="280" y="155" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">Searching</text>
+
+                    <rect x="420" y="110" width="120" height="80" rx="15" fill="#e8f5e9" stroke="#1b5e20" stroke-width="2"/>
+                    <text x="480" y="155" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">Active</text>
+
+                    <rect x="620" y="110" width="120" height="80" rx="15" fill="#fff3e0" stroke="#e65100" stroke-width="2"/>
+                    <text x="680" y="155" text-anchor="middle" font-size="12" font-family="sans-serif" font-weight="bold">Paused</text>
+
+                    <circle cx="750" cy="150" r="10" fill="#333"/>
+
+                    <!-- Transitions -->
+                    <path d="M 140 150 L 220 150" stroke="#333" stroke-width="2" fill="none" marker-end="url(#state-arrow)"/>
+                    <text x="180" y="140" text-anchor="middle" font-size="9" font-family="sans-serif">addCollector()</text>
+
+                    <path d="M 340 150 L 420 150" stroke="#333" stroke-width="2" fill="none" marker-end="url(#state-arrow)"/>
+                    <text x="380" y="140" text-anchor="middle" font-size="9" font-family="sans-serif">beginSession()</text>
+
+                    <!-- Active to Paused and Back -->
+                    <path d="M 540 135 L 620 135" stroke="#333" stroke-width="2" fill="none" marker-end="url(#state-arrow)"/>
+                    <text x="580" y="125" text-anchor="middle" font-size="9" font-family="sans-serif">pause()</text>
+
+                    <path d="M 620 165 L 540 165" stroke="#333" stroke-width="2" fill="none" marker-end="url(#state-arrow)"/>
+                    <text x="580" y="185" text-anchor="middle" font-size="9" font-family="sans-serif">resume()</text>
+
+                    <!-- Termination -->
+                    <path d="M 500 190 Q 580 260 740 160" stroke="#d32f2f" stroke-width="2" fill="none" marker-end="url(#state-arrow-red)"/>
+                    <text x="620" y="240" text-anchor="middle" font-size="9" font-family="sans-serif" fill="#d32f2f">stopSession()</text>
+
+                    <!-- Definitions -->
+                    <defs>
+                        <marker id="state-arrow" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+                        </marker>
+                        <marker id="state-arrow-red" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orientation="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#d32f2f" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <section id="2-integration-roadmap">
+            <h2>2. Integration Roadmap</h2>
+
+            <h3 id="21-discovery-phase">2.1 Discovery Phase</h3>
+            <p>Discovery is managed by <code>BluetoothSearchService</code>. It filters for fitness equipment and maintains a list of discovered sensors.</p>
+
+            <pre><code>val bleService = AppComponent.get&lt;BluetoothSearchService&gt;()
+
+// Observe state
+bleService.scanDeviceState.collect { /* update UI */ }
+
+// Start scanning
+bleService.startScanning()</code></pre>
+
+            <h3 id="22-connection-phase">2.2 Connection Phase</h3>
+            <p>Establish a GATT connection to the selected device. The library automatically wraps the connection in the appropriate sensor class (e.g., <code>BikeTrainerSensor</code>).</p>
+
+            <pre><code>// Initiate connection
+bleService.connectToDevice(selectedDevice)</code></pre>
+
+            <div class="info-box">
+                <h4>Library Improvement: Automatic Registration</h4>
+                <p>The <code>DataCollectionService</code> now automatically synchronizes with connected sensors upon starting a session. Manual <code>addCollector()</code> calls are only needed for custom or virtual sensors.</p>
+            </div>
+
+            <h3 id="23-workout-setup">2.3 Workout Setup</h3>
+            <p>Configure the session with an MRC course. The library will handle connecting the dots between the timer and the hardware.</p>
+
+            <pre><code>val session = AppComponent.get&lt;DataCollectionService&gt;()
+val course = MrcParser.parse(mrcContent)
+
+// session.addCollector(...) is now OPTIONAL for connected BLE sensors
+session.beginSession(course)</code></pre>
+
+            <h3 id="24-session-execution">2.4 Session Execution</h3>
+            <p>During execution, <code>SetTargetPower</code> commands are automatically routed to the trainer hardware.</p>
+
+            <div class="info-box">
+                <h4>Hardware Routing Fix</h4>
+                <p>The internal <code>BikeTrainerSensor.request</code> implementation has been corrected to properly invoke hardware control logic when <code>SetTargetPower</code> packets are emitted by the session timer.</p>
+            </div>
+
+            <pre><code>// Start the flow of data
+session.collect().collect { packet ->
+    // Update real-time UI (Power, Cadence, Timer)
+}</code></pre>
+        </section>
+
+        <section id="3-architecture-best-practices">
+            <h2>3. Architecture Best Practices</h2>
+            <p>We recommend the <strong>Orchestrator Pattern</strong> using a <code>ViewModel</code> to manage the lifecycle and state transitions cleanly.</p>
+
+            <pre><code>class WorkoutViewModel : ViewModel() {
+    private val bleService = AppComponent.get&lt;BluetoothSearchService&gt;()
+    private val sessionService = AppComponent.get&lt;DataCollectionService&gt;()
+
+    fun onSensorSelected(device: BluetoothComponent) {
+        viewModelScope.launch {
+            bleService.connectToDevice(device)
+            // No need to manually add collector; handled by beginSession()
+        }
+    }
+
+    fun startWorkout(mrcFile: String) {
+        val course = MrcParser.parse(mrcFile)
+        sessionService.beginSession(course)
+        
+        viewModelScope.launch {
+            sessionService.collect().collect { /* Update UI State */ }
+        }
+    }
+}</code></pre>
+        </section>
+    </div>
+</body>
+</html>

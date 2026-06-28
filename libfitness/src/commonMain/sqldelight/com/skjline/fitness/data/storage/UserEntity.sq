@@ -1,0 +1,23 @@
+CREATE TABLE UserCreditEntity (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    service TEXT NOT NULL,
+    bearer TEXT NOT NULL,
+    refresh TEXT NOT NULL,
+    lastAccessed TEXT NOT NULL
+);
+
+insert:
+INSERT OR REPLACE INTO UserCreditEntity(id, service, bearer, refresh, lastAccessed)
+VALUES(?, ?, ?, ?, ?);
+
+getAll:
+SELECT * FROM UserCreditEntity;
+
+updateData:
+UPDATE UserCreditEntity
+SET bearer = :bearer, refresh = :refresh, lastAccessed = :lastAccessed
+WHERE id IS :id;
+
+delete:
+DELETE FROM UserCreditEntity
+WHERE id IS :id;

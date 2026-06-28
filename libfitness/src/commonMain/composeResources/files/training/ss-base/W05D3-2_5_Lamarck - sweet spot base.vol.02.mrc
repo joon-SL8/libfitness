@@ -1,0 +1,33 @@
+[COURSE HEADER]
+VERSION = 2
+UNITS = ENGLISH
+DESCRIPTION = Lamarck is 4x10-minute intervals set right at FTP and the active recoveries between intervals are each 2 minutes long.
+FILE NAME = W05D3-2_5 Lamarck - sweet spot base.vol.02
+MINUTES PERCENT
+[END COURSE HEADER]
+[COURSE DATA]
+0.00	50
+3.00	50
+3.00	65
+5.00	65
+5.00	95
+8.00	95
+8.00	40
+12.00	40
+12.00	100
+22.00	100
+22.00	40
+24.00	40
+24.00	100
+34.00	100
+34.00	40
+36.00	40
+36.00	100
+46.00	100
+46.00	40
+48.00	40
+48.00	100
+58.00	100
+58.00	40
+60.00	40
+[END COURSE DATA]

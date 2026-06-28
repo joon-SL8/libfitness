@@ -1,0 +1,70 @@
+[versions]
+agp = "9.2.1"
+android-minSdk = "26"
+android-targetSdk = "36"
+android-compileSdk = "36"
+androidx-activityCompose = "1.13.0"
+compose-plugin = "1.10.3"
+junit = "4.13.2"
+kable-ver = "0.43.0"
+koin = "4.2.1"
+kotlin = "2.3.21"
+kotlinx-compose = "1.9.0"
+kotlinx-coroutines = "1.11.0"
+kotlinx-datetime-ver = "0.8.0"
+kotlinx-resources = "1.10.3"
+kotlinx-serialization = "1.11.0"
+ktor-ver = "3.5.0"
+okio-ver = "3.17.0"
+voyager = "1.1.0-beta03"
+sqldelight-ver = "2.3.2"
+skie-ver = "0.10.12"
+
+#calendar-ver = "2.10.1"
+#garmin-ver = "21.200.0"
+
+[libraries]
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+#compose-calendar = { module = "com.kizitonwose.calendar:compose-multiplatform", version.ref = "calendar-ver" }
+#garmin-fit = { module = "com.garmin:fit", version.ref = "garmin-ver" }
+
+kable-core = { module = "com.juul.kable:kable-core", version.ref = "kable-ver" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime-ver" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+kotlinx-material3 = { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "kotlinx-compose" }
+kotlinx-resources = { group = "org.jetbrains.compose.components", name = "components-resources", version.ref = "kotlinx-resources" }
+ktor-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor-ver" }
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor-ver" }
+ktor-content = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor-ver" }
+ktor-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor-ver" }
+ktor-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor-ver" }
+ktor-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor-ver" }
+ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktor-ver" }
+ktor-tls = { module = "io.ktor:ktor-network-tls", version.ref = "ktor-ver" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio-ver" }
+voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
+voyager-transition = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
+sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight-ver" }
+sqldelight-native = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight-ver" }
+sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight-ver" }
+sqldelight-coroutine = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight-ver" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+touchlabs-skie-options = { module = "co.touchlab.skie:configuration-annotations", version.ref = "skie-ver"}
+
+[plugins]
+kotlinLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+touchlabs-skie = { id = "co.touchlab.skie", version.ref="skie-ver" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight-ver" }

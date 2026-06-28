@@ -1,0 +1,158 @@
+<resources>
+    <string name="app_name">링크핏</string>
+
+    <string name="action_home">홈</string>
+    <string name="action_training">트레이닝</string>
+    <string name="action_activity">활동</string>
+    <string name="action_profile">프로파일</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="home_fragment_label">홈</string>
+    <string name="train_plan_fragment_label">트레이닝 플랜</string>
+    <string name="calendar_fragment_label">달력</string>
+    <string name="activity_fragment_label">세쎤</string>
+    <string name="profile_fragment_label">프로파일</string>
+
+    <string name="home">홈</string>
+    <string name="activity">활동</string>
+    <string name="trainer">트레이닝</string>
+    <string name="explore_train_plan_fragment_label">트레이닝 플랜 탐색하기</string>
+
+    <string name="trainee_name">이름</string>
+    <string name="today">날짜</string>
+
+    <string name="fitness_header">피트니스</string>
+    <string name="fitness">나의 피트니스 스탯</string>
+    <string name="fatigue">피로도</string>
+    <string name="form">폼</string>
+    <string name="duration">지속시간</string>
+    <string name="distance">거리</string>
+
+
+    <string name="view_graph">그래프 보기</string>
+
+    <string name="FTP">FTP</string>
+    <string name="TSS">TSS</string>
+
+    <string name="unit_watt">W</string>
+    <string name="unit_kpw">Kg/W</string>
+    <string name="unit_rpm">RPM</string>
+    <string name="unit_bpm">BPM</string>
+
+    <string name="unit_min">Min</string>
+    <string name="unit_sec">Sec</string>
+    <string name="unit_minute">Minute</string>
+    <string name="unit_second">Second</string>
+
+    <string name="average">평균</string>
+    <string name="max">Max</string>
+    <string name="min">Min</string>
+    <string name="IF">IF</string>
+    <string name="NP">NP</string>
+    <string name="power">파워</string>
+    <string name="hr">HR</string>
+    <string name="heart_rate">심박</string>
+
+    <string name="total_time">진행 시간</string>
+    <string name="interval">인터발</string>
+    <string name="target_power">타겟 파워</string>
+
+    <string name="speed">속도</string>
+    <string name="cadence">케이던스</string>
+
+    <string name="metric">미터</string>
+    <string name="imperial">Imperial</string>
+
+    <string name="distance_metric">미터</string>
+    <string name="distance_imperial">마일</string>
+    <string name="weight_metric">kg</string>
+    <string name="weight_imperial">lb</string>
+
+    <string name="zone">존</string>
+    <string name="zone_x">존 %1</string>
+    <string name="recovery">회복</string>
+    <string name="aerobic">엔듀런스</string>
+    <string name="tempo">템포</string>
+    <string name="threshold">역치</string>
+    <string name="vo2max">VO2Max</string>
+    <string name="anaerobic">무산소</string>
+    <string name="neuromuscular">신경근</string>
+
+    <string name="chart_characteristic_label">특성</string>
+    <string name="chart_development_label">발전</string>
+
+    <string name="ble_devices_header">트레이닝 장비</string>
+    <string name="ble_devices_session">선택 세션</string>
+    <string name="ble_devices_list">아래와 같은 기기를 찾았습니다. 사용할 기기를 선택해주세요.</string>
+    <string name="ble_devices_list_searching">잠시 기다려 주세요. 사용할 기기를 찾는 중 입니다.</string>
+    <string name="ble_device_selected">선택</string>
+    <string name="ble_device_not_available">사용할 기기를 찾지 못했습니다</string>
+
+    <string name="title_activity_session">세션</string>
+    <string name="todays_training">오늘의 워크아웃</string>
+    <string name="todays_training_start">지금 시작</string>
+    <string name="adjust_workload">워크아웃 미세조정</string>
+
+    <string name="session_title">오늘의 워크아웃</string>
+
+    <string name="start">시작</string>
+    <string name="stop">스탑</string>
+    <string name="pause">일시정지</string>
+    <string name="erg">ERG</string>
+
+    <string name="ext_app">사용 App</string>
+    <string name="connect_strava">Strava와 연결</string>
+    <string name="reconnect_strava">Strava와 재연결</string>
+
+    <string name="app_greeting">Skjline을 시작합니다</string>
+    <string name="app_sign_in">로그인을 해주세요</string>
+    <string name="app_reg_complete">가입을 완료 했습니다. 시작합니다.</string>
+
+    <string name="set_credential">회원가입</string>
+    <string name="username">email</string>
+    <string name="password">비밀번호</string>
+    <string name="reset_password">비밀번호 변경</string>
+    <string name="register">회원가입</string>
+    <string name="sign_in">로그인</string>
+
+    <string name="request_passcode">비밀번호 변경</string>
+    <string name="request_passcode_label">가입시 연동된 이메일을 입력 해주세요</string>
+    <string name="email_used">email address</string>
+    <string name="confirm_request_passcode">이메일로 비밀번호 보내기</string>
+    <string name="validate_passcode">이메일로 수신된 보안코드를 입력 해주세요</string>
+    <string name="confirm_passcode">보안코드 인증받기</string>
+    <string name="request_passcode_again">보안코드 다시받기</string>
+
+    <string name="set_password">새로운 비밀번호를 입력 해주세요</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="confirm_password_change">변경하기</string>
+
+    <string name="confirm_password_changed">비밀번호 변경이 완료 되었습니다.</string>
+    <string name="go_back_sign_in">로그인 페이지로 돌아가기</string>
+
+    <string name="set_profile_title">프로필 만들기</string>
+    <string name="set_profile">Let's set your name and age</string>
+    <string name="Name">이름</string>
+    <string name="Age">나이</string>
+
+    <string name="set_fitness_info_title">피트니스 정보</string>
+    <string name="set_fitness_info">본인의 몸무게와 FTP를 입력해주세요</string>
+    <string name="whats_ftp">Functional Threshold Power</string>
+    <string name="set_ftp">나의 20분 최대파워의 95%</string>
+    <string name="weight">몸무게</string>
+
+    <string name="training_level_title">트레이닝 레벨</string>
+    <string name="training_level_description">How do we set Training Levels</string>
+    <string name="training_level_one">입문자</string>
+    <string name="training_level_one_desc">체계화된 트레이닝 경험이 없거나 생소한 단계</string>
+    <string name="training_level_two">중급자</string>
+    <string name="training_level_two_desc">경험이 있거나 체계화된 트레이닝을 지속적으로 진행중인 단계</string>
+    <string name="training_level_three">프로</string>
+    <string name="training_level_three_desc">다양한 경험, 쳬계화되고 고도화된 스켸줄 트레이닝등을 소화 가능한 단계</string>
+
+    <string name="next">다음</string>
+    <string name="cancel">취소</string>
+
+    <string name="change_password_title">Change Password</string>
+</resources>
