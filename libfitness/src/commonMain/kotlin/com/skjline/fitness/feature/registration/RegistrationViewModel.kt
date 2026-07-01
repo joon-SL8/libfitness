@@ -3,7 +3,7 @@ package com.skjline.fitness.feature.registration
 import Launcher
 import androidx.lifecycle.ViewModel
 import com.skjline.fitness.core.utils.DispatcherProvider
-import com.skjline.fitness.data.asset.model.ProfileResult
+import com.skjline.fitness.data.asset.model.DataResult
 import com.skjline.fitness.data.storage.input.AthleteProfileDataInput
 import com.skjline.fitness.data.storage.input.CredentialDataInput
 import com.skjline.fitness.data.storage.input.UserProfileInput
@@ -19,11 +19,10 @@ import com.skjline.fitness.presentation.MainRoute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
+import org.koin.core.component.inject
 
 class RegistrationViewModel : ViewModel() {
-    private val dispatcher: DispatcherProvider by lazy {
-        AppComponent.get<DispatcherProvider>()
-    }
+    private val dispatcher: DispatcherProvider by AppComponent.inject()
 
     private val launcher by lazy { AppComponent.get<Launcher>() }
 
@@ -147,7 +146,7 @@ class RegistrationViewModel : ViewModel() {
         updateRegistrationStep(route = route)
     }
 
-    private fun <I : com.skjline.fitness.data.storage.input.Input, R : ProfileResult> updateRegistrationStep(
+    private fun <I : com.skjline.fitness.data.storage.input.Input, R : DataResult> updateRegistrationStep(
         route: Route<I, R>
     ) {
         CoroutineScope(dispatcher.io).launch {
@@ -159,7 +158,7 @@ class RegistrationViewModel : ViewModel() {
         }
     }
 
-    internal data class Route<I : com.skjline.fitness.data.storage.input.Input, R : ProfileResult>(
+    internal data class Route<I : com.skjline.fitness.data.storage.input.Input, R : DataResult>(
         val useCase: DataUseCase<I, R>?,
         val input: I?,
         val regStep: RegStep

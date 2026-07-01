@@ -23,6 +23,7 @@ import com.skjline.fitness.core.model.packet.Cadence
 import com.skjline.fitness.core.model.packet.CyclingPowerMeasurementPacket
 import com.skjline.fitness.core.model.packet.DataPacket
 import com.skjline.fitness.core.model.packet.Power
+import com.skjline.fitness.core.model.packet.PowerControlCommands
 import com.skjline.fitness.core.model.packet.Speed
 import com.skjline.fitness.core.model.packet.SimpleLongContent
 import com.skjline.fitness.core.model.state.Connected
@@ -54,6 +55,8 @@ class BikeTrainerSensor(
     override val powerFlow: Flow<Power> = observer.filterIsInstance()
     override val cadenceFlow: Flow<Cadence> = observer.filterIsInstance()
     override val speedFlow: Flow<Speed> = observer.filterIsInstance()
+
+    private val powerCommands = PowerControlCommands()
 
     private val powerCharacteristic: Characteristic = characteristicOf(
         Uuid.parse(GattService.Cycling_Power.uuid),
@@ -128,23 +131,17 @@ class BikeTrainerSensor(
 
     private fun start() {
         println("writing control point char for start")
-        peripheral.writeControlWithResponse(
-            data = byteArrayOf(FMCP_START),
-        )
+        peripheral.writeControlWithResponse(powerCommands.getStartCommand())
     }
 
     private fun stop() {
         println("writing control point char for stop")
-        peripheral.writeControlWithResponse(
-            data = byteArrayOf(FMCP_STOP_PAUSE, FMCP_VALUE_STOP),
-        )
+        peripheral.writeControlWithResponse(powerCommands.getStopCommand())
     }
 
     private fun pause() {
         println("writing control point char for pause")
-        peripheral.writeControlWithResponse(
-            data = byteArrayOf(FMCP_STOP_PAUSE, FMCP_VALUE_PAUSE),
-        )
+        peripheral.writeControlWithResponse(powerCommands.getPauseCommand())
     }
 
     override fun request(action: Action) {
@@ -171,11 +168,7 @@ class BikeTrainerSensor(
         listOf(PacketType.Power, PacketType.Cadence, PacketType.Speed)
 
     override suspend fun setTargetPower(watts: Int): Result<Unit> = runCatching {
-        val targetPowerCommand = byteArrayOf(
-            FMCP_SET_TARGET_POWER,
-            (watts and 0xFF).toByte(),
-            ((watts shr 8) and 0xFF).toByte()
-        )
+        val targetPowerCommand = powerCommands.getSetTargetPowerCommand(watts)
         println("set target power: $watts")
         peripheral.write(controlCharacteristic, targetPowerCommand, WriteType.WithResponse)
     }
@@ -196,11 +189,5 @@ class BikeTrainerSensor(
     private companion object Companion {
         // Fitness Machine Control Procedure Commands & Values
         const val FMCP_REQUEST_CONTROL: Byte = 0x00
-        const val FMCP_SET_TARGET_POWER: Byte = 0x05
-        const val FMCP_START: Byte = 0x07
-        const val FMCP_STOP_PAUSE: Byte = 0x08
-
-        const val FMCP_VALUE_STOP: Byte = 0x01
-        const val FMCP_VALUE_PAUSE: Byte = 0x02
     }
 }

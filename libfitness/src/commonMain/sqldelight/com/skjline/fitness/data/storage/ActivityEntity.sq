@@ -1,5 +1,6 @@
 CREATE TABLE ActivityEntity (
-    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    id INTEGER NOT NULL,
+    session INTEGER NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     start TEXT NOT NULL,
@@ -7,16 +8,20 @@ CREATE TABLE ActivityEntity (
     power INTEGER,
     heart INTEGER,
     speed INTEGER,
-    cadence INTEGER
+    cadence INTEGER,
+    PRIMARY KEY (id, session)
 );
 
 insert:
-INSERT OR REPLACE INTO ActivityEntity(id, name, description, start, duration, power, heart, speed, cadence)
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO ActivityEntity(id, session, name, description, start, duration, power, heart, speed, cadence)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
-getAll:
-SELECT * FROM ActivityEntity;
+getMaxId:
+SELECT id FROM ActivityEntity ORDER BY id DESC LIMIT 1;
+
+getAllForSession:
+SELECT * FROM ActivityEntity WHERE session = :sessionId;
 
 delete:
 DELETE FROM ActivityEntity
-WHERE id IS :id;
+WHERE session IS :sessionId;

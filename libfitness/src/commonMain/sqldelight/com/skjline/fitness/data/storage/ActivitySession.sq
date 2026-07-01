@@ -5,21 +5,28 @@ CREATE TABLE ActivitySession (
     sessionDate INTEGER NOT NULL,
     duration INTEGER NOT NULL,
     mrcFilename TEXT NOT NULL,
-    mrcFilepath TEXT NOT NULL
+    mrcFilepath TEXT NOT NULL,
+    sessionFilename TEXT NOT NULL
 );
 
 insert:
-INSERT OR REPLACE INTO ActivitySession(id, name, description, sessionDate, duration, mrcFilename, mrcFilepath)
-VALUES(?, ?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO ActivitySession(id, name, description, sessionDate, duration, mrcFilename, mrcFilepath, sessionFilename)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?);
 
 getAll:
 SELECT * FROM ActivitySession;
 
+getMaxId:
+SELECT id FROM ActivitySession ORDER BY id DESC LIMIT 1;
+
+getBySessionId:
+SELECT * FROM ActivitySession WHERE id = :sessionId;
+
 getByName:
-SELECT * FROM ActivitySession WHERE name = ?;
+SELECT * FROM ActivitySession WHERE name = :sessionName;
 
 getByDateRange:
-SELECT * FROM ActivitySession WHERE sessionDate > ? AND sessionDate < ?;
+SELECT * FROM ActivitySession WHERE sessionDate > :date AND sessionDate < :date;
 
 delete:
 DELETE FROM ActivitySession

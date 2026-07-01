@@ -24,28 +24,11 @@ class UpdateUserFitnessUseCase : BaseDataUseCase<FitnessInput, UpdateFitnessResu
         val dispatcher = AppComponent.get<DispatcherProvider>()
         withContext(dispatcher.io) {
             listOf(
-                launch { insertOrUpdateData(index + 1, input.ftp, PROFILE_KEY_FTP, contents) },
-                launch { insertOrUpdateData(index + 2, input.weight, PROFILE_KEY_WEIGHT, contents) }
+                launch { insertOrUpdateData(index + 1, input.ftp.toString(), PROFILE_KEY_FTP, contents) },
+                launch { insertOrUpdateData(index + 2, input.weight.toString(), PROFILE_KEY_WEIGHT, contents) }
             ).joinAll()
         }
 
         return UpdateFitnessResult
-    }
-
-    private fun insertOrUpdateData(index: Int, data: Int, type: String, contents: List<UserProfileEntity>) {
-        contents.findLast {
-            it.name == type
-        }?.let { fitness ->
-            println("updating $type:$data")
-            storage.database.userProfileQueries.updateData(id = fitness.id, data = "$data")
-        } ?: run {
-            println("adding[$index] $type:$data")
-            storage.database.userProfileQueries.insert(
-                id = index.toLong(),
-                name = type,
-                data_ = "$data",
-                updated = now().epochSeconds,
-            )
-        }
     }
 }
