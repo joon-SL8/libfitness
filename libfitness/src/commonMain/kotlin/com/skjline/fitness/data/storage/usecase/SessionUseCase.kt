@@ -37,8 +37,9 @@ class GetSessionUseCase : BaseDataUseCase<GetSessionInfoInput, GetSessionResult>
         val contents = with(input) {
             name?.let {
                 storage.database.activitySessionQueries.getByName(it).executeAsList()
-            } ?: date?.let {
-                storage.database.activitySessionQueries.getByDateRange(it).executeAsList()
+            } ?: dateFrom?.let {
+                val to = dateTo ?: (it + (7 * 24 * 60 * 60 * 1000))
+                storage.database.activitySessionQueries.getByDateRange(it, to).executeAsList()
             } ?: throw IllegalArgumentException("Name or Date is required")
         }.map {
             Session(
