@@ -26,7 +26,7 @@ getByName:
 SELECT * FROM ActivitySession WHERE name = :sessionName;
 
 getByDateRange:
-SELECT * FROM ActivitySession WHERE sessionDate > :date AND sessionDate < :date;
+SELECT * FROM ActivitySession WHERE sessionDate > :dateFrom AND sessionDate < :dateTo;
 
 delete:
 DELETE FROM ActivitySession

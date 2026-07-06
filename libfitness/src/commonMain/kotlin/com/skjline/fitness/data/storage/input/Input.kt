@@ -21,7 +21,7 @@ data class InsertSessionInfoInput(val data: Session) : Input
 
 data class InsertSessionEntryInput(val data: SessionEntry) : Input
 
-data class GetSessionInfoInput(val name: String?, val date: Long?) : Input
+data class GetSessionInfoInput(val name: String?, val dateFrom: Long?, val dateTo: Long?) : Input
 
 data class DeleteSessionInfoInput(val sessionId: Long) : Input
 
