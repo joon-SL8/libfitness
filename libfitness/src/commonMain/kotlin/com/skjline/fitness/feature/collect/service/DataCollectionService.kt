@@ -3,6 +3,7 @@ package com.skjline.fitness.feature.collect.service
 import com.skjline.fitness.core.model.generic.DataCapture
 import com.skjline.fitness.core.model.generic.PacketType
 import com.skjline.fitness.core.model.generic.Pause
+import com.skjline.fitness.core.model.generic.Resume
 import com.skjline.fitness.core.model.generic.SetCourse
 import com.skjline.fitness.core.model.generic.SetTargetPower
 import com.skjline.fitness.core.model.generic.SetTimeSubscriber
@@ -21,6 +22,7 @@ import com.skjline.fitness.feature.arrange.service.BluetoothSearchService
 import com.skjline.fitness.feature.collect.model.CollectorState
 import com.skjline.fitness.feature.collect.model.SearchMode
 import com.skjline.fitness.feature.collect.model.SessionPause
+import com.skjline.fitness.feature.collect.model.SessionResumed
 import com.skjline.fitness.feature.collect.model.SessionStart
 import com.skjline.fitness.feature.collect.model.SessionStop
 import com.skjline.fitness.injection.AppComponent
@@ -106,6 +108,11 @@ class DataCollectionService : ActivityDataCollector {
         bleService.getConnectedSensors().forEach { sensor ->
             addCollector(sensor)
         }
+    }
+
+    override fun resumeSession() {
+        timeProvider.request(Resume)
+        updateSessionStatus(SessionResumed)
     }
 
     override fun pauseSession() {

@@ -6,12 +6,18 @@ CREATE TABLE ActivitySession (
     duration INTEGER NOT NULL,
     mrcFilename TEXT NOT NULL,
     mrcFilepath TEXT NOT NULL,
-    sessionFilename TEXT NOT NULL
+    sessionFilename TEXT NOT NULL,
+    sessionPublished INTEGER
 );
 
 insert:
-INSERT OR REPLACE INTO ActivitySession(id, name, description, sessionDate, duration, mrcFilename, mrcFilepath, sessionFilename)
-VALUES(?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO ActivitySession(id, name, description, sessionDate, duration, mrcFilename, mrcFilepath, sessionFilename, sessionPublished)
+VALUES (?,?,?,?,?,?,?,?,?);
+
+updateSessionPublish:
+UPDATE ActivitySession
+ SET sessionPublished = :sessionPublishedOn
+WHERE id = :sessionId;
 
 getAll:
 SELECT * FROM ActivitySession;

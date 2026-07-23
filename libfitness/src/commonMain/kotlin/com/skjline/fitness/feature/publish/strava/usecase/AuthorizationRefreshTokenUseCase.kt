@@ -37,7 +37,10 @@ suspend fun Client.refreshAuthorizationTokenUseCase(
                 KEY_PARAM_REQUEST_CLIENT_ID,
                 CLIENT_ID
             )
-            append(KEY_PARAM_REQUEST_CLIENT_SECRET, CLIENT_SECRET)
+            append(
+                KEY_PARAM_REQUEST_CLIENT_SECRET,
+                CLIENT_SECRET
+            )
             append(
                 KEY_PARAM_REQUEST_GRANT_TYPE_REFRESH_VALUE,
                 old?.refreshToken.orEmpty()

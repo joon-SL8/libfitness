@@ -5,6 +5,7 @@ sealed interface CollectorState
 data object Session : CollectorState
 data object SearchMode : CollectorState
 data object SessionPause : CollectorState
+data object SessionResumed : CollectorState
 data object Initializing : CollectorState
 
 data class SessionStart(val withERG: Boolean, val timestamp: Long) : CollectorState

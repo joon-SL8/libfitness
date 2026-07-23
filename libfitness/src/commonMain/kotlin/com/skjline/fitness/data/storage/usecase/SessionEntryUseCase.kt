@@ -3,6 +3,7 @@ package com.skjline.fitness.data.storage.usecase
 import com.skjline.fitness.core.model.workout.SessionEntry
 import com.skjline.fitness.data.asset.model.GetSessionEntriesResult
 import com.skjline.fitness.data.asset.model.UpdateSessionResult
+import com.skjline.fitness.data.storage.input.GetAllInput
 import com.skjline.fitness.data.storage.input.GetSessionEntryInput
 import com.skjline.fitness.data.storage.input.InsertSessionEntryInput
 import kotlin.time.ExperimentalTime
@@ -28,7 +29,31 @@ class UpdateSessionEntryUseCase : BaseDataUseCase<InsertSessionEntryInput, Updat
                 cadence = cadence,
             )
         }
+
+        println("Add Session Entry: ${entry.name}:${entry.power} W / ${entry.heart} bpm / ${entry.cadence} rpm")
         return UpdateSessionResult(entry.id)
+    }
+}
+
+class GetAllSessionEntryUseCase : BaseDataUseCase<GetAllInput, GetSessionEntriesResult>() {
+    override suspend operator fun invoke(input: GetAllInput): GetSessionEntriesResult {
+        val contents = storage.database.activityEntityQueries.getAll().executeAsList().map {
+            println("Add Session Entry: ${it.id}:${it.session}")
+            SessionEntry(
+                id = it.id,
+                session = it.session,
+                name = it.name,
+                description = it.description.orEmpty(),
+                start = it.start,
+                duration = it.duration,
+                power = it.power ?: 0L,
+                heart = it.heart ?: 0L,
+                speed = it.speed ?: 0L,
+                cadence = it.cadence ?: 0L,
+            )
+        }
+
+        return GetSessionEntriesResult(contents)
     }
 }
 

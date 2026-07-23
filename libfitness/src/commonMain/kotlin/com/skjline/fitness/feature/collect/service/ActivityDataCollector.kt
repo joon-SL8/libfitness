@@ -12,6 +12,7 @@ interface ActivityDataCollector {
     fun collect(): Flow<DataPacket>
 
     fun beginSession(course: MrcCourse)
+    fun resumeSession()
     fun pauseSession()
     fun stopSession()
 
