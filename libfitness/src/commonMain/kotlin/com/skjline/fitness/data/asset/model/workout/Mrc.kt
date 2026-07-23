@@ -32,13 +32,16 @@ data class MrcHeader(
         return header
     }
 
-    fun parseData(queue: ArrayDeque<String>): List<Course> =
-        queue.takeWhile {
+    fun parseData(queue: ArrayDeque<String>): List<Course> {
+        val data: List<Course> = queue.takeWhile {
             it != END_DATA
         }.map {
             val (key, content) = getEntry(it)
             Course(key.toFloat(), content.toString().toInt())
         }
+
+        return data
+    }
 
     fun parseCue(queue: ArrayDeque<String>): List<Cue> =
         queue.takeWhile {

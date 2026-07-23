@@ -12,6 +12,7 @@ import com.skjline.fitness.core.model.generic.Disconnect
 import com.skjline.fitness.core.model.generic.Initialize
 import com.skjline.fitness.core.model.generic.PacketType
 import com.skjline.fitness.core.model.generic.Pause
+import com.skjline.fitness.core.model.generic.Resume
 import com.skjline.fitness.core.model.generic.SetCourse
 import com.skjline.fitness.core.model.generic.SetTargetPower
 import com.skjline.fitness.core.model.generic.SetTimeSubscriber
@@ -58,6 +59,7 @@ class CadenceSensor(
             is Connect -> connect()
             is Disconnect -> {}
             is Start, Stop -> {}
+            is Resume -> {}
             is Pause -> {}
             is Initialize -> {}
             is SetCourse -> {}

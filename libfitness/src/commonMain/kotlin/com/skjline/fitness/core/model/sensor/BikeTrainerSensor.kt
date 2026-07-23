@@ -14,6 +14,7 @@ import com.skjline.fitness.core.model.generic.Disconnect
 import com.skjline.fitness.core.model.generic.Initialize
 import com.skjline.fitness.core.model.generic.PacketType
 import com.skjline.fitness.core.model.generic.Pause
+import com.skjline.fitness.core.model.generic.Resume
 import com.skjline.fitness.core.model.generic.SetCourse
 import com.skjline.fitness.core.model.generic.SetTargetPower
 import com.skjline.fitness.core.model.generic.SetTimeSubscriber
@@ -152,7 +153,7 @@ class BikeTrainerSensor(
             is Initialize -> {}
             is SetCourse -> {}
             is SetTimeSubscriber -> {}
-            is Start -> start()
+            is Start, Resume -> start()
             is Stop -> stop()
             is SetTargetPower -> {
                 scope.launch {

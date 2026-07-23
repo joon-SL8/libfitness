@@ -14,7 +14,7 @@ class Analysis {
     suspend fun initialize() {
         val profiles = storage.database.userProfileQueries.getAll().executeAsList()
         val profilesDebug = profiles.joinToString { "${it.name}: ${it.data_}" }
-        ftp = (profiles.firstOrNull { it.name == PROFILE_KEY_FTP }?.data_?.toDouble() ?: 1.0)
+        ftp = (profiles.firstOrNull { it.name == PROFILE_KEY_FTP }?.data_?.toDouble()?.takeIf { it > 0.0 } ?: 1.0)
         println("FTP: $ftp - Profiles: $profilesDebug")
     }
 

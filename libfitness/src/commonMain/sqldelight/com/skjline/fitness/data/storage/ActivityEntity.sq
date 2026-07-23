@@ -19,6 +19,9 @@ VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 getMaxId:
 SELECT id FROM ActivityEntity ORDER BY id DESC LIMIT 1;
 
+getAll:
+SELECT * FROM ActivityEntity;
+
 getAllForSession:
 SELECT * FROM ActivityEntity WHERE session = :sessionId;
 

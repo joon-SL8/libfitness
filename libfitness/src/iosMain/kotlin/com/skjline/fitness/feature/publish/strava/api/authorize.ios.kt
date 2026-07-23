@@ -31,9 +31,10 @@ class ContextProvider : NSObject(), ASWebAuthenticationPresentationContextProvid
     }
 }
 
-private suspend fun processAppLinkContent(link: String) {
+private suspend fun processAppLinkContent(link: String?) {
+    val lnk = link ?: ""
     println("processing applink content $link")
-    val codeUseCase = AuthorizationCodeUseCase(link)
+    val codeUseCase = AuthorizationCodeUseCase(lnk)
 
     val result = codeUseCase.invoke()
     if (result !is AuthorizationCodeUseCase.AuthorizationCodeResult.Succeed) {
@@ -71,7 +72,7 @@ actual fun getStravaAuthorize(deeplink: String): Authorize {
                     val context = dispatcherProvider.io + Job()
                     CoroutineScope(context).launch {
                         withContext(context) {
-                            processAppLinkContent(url.toString())
+                            processAppLinkContent(url?.toString())
                         }
                     }
                 }

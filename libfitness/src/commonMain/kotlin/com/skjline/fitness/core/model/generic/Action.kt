@@ -13,6 +13,8 @@ data object Disconnect : Action
 
 data object Start : Action
 
+data object Resume : Action
+
 data object Pause : Action
 
 data object Stop : Action

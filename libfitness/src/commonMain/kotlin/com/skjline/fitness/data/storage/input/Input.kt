@@ -19,9 +19,13 @@ data class GetProfileInput(val key: String) : Input
 
 data class InsertSessionInfoInput(val data: Session) : Input
 
+data class UpdateSessionPublishInput(val sessionId: Long, val timestamp: Long) : Input
+
 data class InsertSessionEntryInput(val data: SessionEntry) : Input
 
-data class GetSessionInfoInput(val name: String?, val dateFrom: Long?, val dateTo: Long?) : Input
+data object GetAllInput : Input
+
+data class GetSessionInfoInput(val id: Long?, val name: String?, val dateFrom: Long?, val dateTo: Long?) : Input
 
 data class DeleteSessionInfoInput(val sessionId: Long) : Input
 

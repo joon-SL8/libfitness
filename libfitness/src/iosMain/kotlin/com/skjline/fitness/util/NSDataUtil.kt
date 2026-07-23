@@ -1,5 +1,6 @@
 package com.skjline.fitness.util
 
+import com.skjline.fitness.core.model.workout.SessionEntry
 import com.skjline.fitness.feature.publish.fit.model.DataRow
 import com.skjline.fitness.feature.publish.fit.model.FitContent
 import kotlinx.cinterop.BetaInteropApi
@@ -67,4 +68,29 @@ fun ByteArray.toNSData(): NSData = memScoped {
         bytes = allocArrayOf(this@toNSData),
         length = this@toNSData.size.toULong()
     )
+}
+
+fun createDataRow(
+    lat: NSInteger,
+    long: NSInteger,
+    power: NSInteger,
+    heart: NSInteger,
+    spd: NSInteger,
+    cad: NSInteger
+): DataRow {
+    return DataRow(
+        lat = lat,
+        long = long,
+        power = power.toInt(),
+        heartRate = heart.toInt(),
+        cadence = cad.toInt(),
+        speed = spd.toInt(),
+    )
+}
+
+fun SessionEntry.toDataRow(
+    lat: NSInteger = 0,
+    long: NSInteger = 0,
+): DataRow {
+    return DataRow(lat, long, power.toInt(), heart.toInt(), cadence.toInt(), speed.toInt())
 }
