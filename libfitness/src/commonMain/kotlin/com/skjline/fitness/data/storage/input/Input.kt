@@ -19,7 +19,7 @@ data class GetProfileInput(val key: String) : Input
 
 data class InsertSessionInfoInput(val data: Session) : Input
 
-data class UpdateSessionPublishInput(val sessionId: Long, val timestamp: Long) : Input
+data class UpdateSessionPublishInput(val sessionId: Long, val timestamp: Long, val filename: String) : Input
 
 data class InsertSessionEntryInput(val data: SessionEntry) : Input
 

@@ -1,6 +1,7 @@
 CREATE TABLE ActivityEntity (
     id INTEGER NOT NULL,
     session INTEGER NOT NULL,
+    timestamp INTEGER NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     start TEXT NOT NULL,
@@ -9,15 +10,18 @@ CREATE TABLE ActivityEntity (
     heart INTEGER,
     speed INTEGER,
     cadence INTEGER,
-    PRIMARY KEY (id, session)
+    PRIMARY KEY (id, session, timestamp)
 );
 
 insert:
-INSERT OR REPLACE INTO ActivityEntity(id, session, name, description, start, duration, power, heart, speed, cadence)
-VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR REPLACE INTO ActivityEntity(id, session, timestamp, name, description, start, duration, power, heart, speed, cadence)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 getMaxId:
 SELECT id FROM ActivityEntity ORDER BY id DESC LIMIT 1;
+
+getMaxIdForSession:
+SELECT id FROM ActivityEntity WHERE session = :sessionId ORDER BY id DESC LIMIT 1;
 
 getAll:
 SELECT * FROM ActivityEntity;

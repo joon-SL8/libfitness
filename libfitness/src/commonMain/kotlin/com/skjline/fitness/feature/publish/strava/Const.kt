@@ -2,7 +2,7 @@ package com.skjline.fitness.feature.publish.strava
 
 class Const {
     companion object {
-        const val APP_HOME_URL = "https://localhost"
+        const val APP_HOME_URL = "https://strava.com/"
 
         // move to config
         const val CLIENT_NAME = "skjline"

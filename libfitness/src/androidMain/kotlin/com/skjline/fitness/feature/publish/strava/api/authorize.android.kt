@@ -14,7 +14,7 @@ import org.koin.core.component.get
 
 actual fun getStravaAuthorize(deeplink: String): Authorize {
     return object : Authorize {
-        override fun authenticate() {
+        override fun authenticate() : AuthorizationCodeResult {
             val context: Context = AppComponent.get<Context>()
 
             val intentUri = Uri.parse(AUTH_AUTHORIZE)
@@ -29,6 +29,7 @@ actual fun getStravaAuthorize(deeplink: String): Authorize {
             context.startActivity(Intent(Intent.ACTION_VIEW, intentUri).apply {
                 addFlags(FLAG_ACTIVITY_NEW_TASK)
             })
+            return Succeed("")
         }
     }
 }

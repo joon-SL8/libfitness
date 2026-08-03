@@ -18,6 +18,19 @@ import org.koin.dsl.module
  */
 fun initializeApp(
     processor: FitProcessor,
+) = initializeApp(
+    processor,
+) {}
+
+/**
+ * Initializes Koin for client application
+ * A convenience method to avoid setting block, a high order method
+ *
+ * @param processor Fit file processor
+ * @param launcher Screen Launcher / Navigator
+ */
+fun initializeApp(
+    processor: FitProcessor,
     launcher: Launcher,
 ) = initializeApp(
     processor,
@@ -51,7 +64,7 @@ fun simpleInitializer(
  */
 fun initializeApp(
     processor: FitProcessor,
-    launcher: Launcher,
+    launcher: Launcher = DefaultLauncher(),
     block: KoinApplication.() -> Unit = {}
 ): KoinApplication = startKoin {
     block()

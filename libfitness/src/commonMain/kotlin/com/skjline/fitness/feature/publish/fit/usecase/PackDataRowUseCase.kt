@@ -4,6 +4,8 @@ import com.skjline.fitness.core.model.generic.Const.Companion.FIT_FILE_EXT
 import com.skjline.fitness.core.model.generic.Const.Companion.TRAINING_DATA_FILENAME_PREAMBLE
 import com.skjline.fitness.core.model.workout.SessionEntry
 import com.skjline.fitness.core.utils.DispatcherProvider
+import com.skjline.fitness.data.storage.input.UpdateSessionPublishInput
+import com.skjline.fitness.data.storage.usecase.UpdateSessionPublishedOnUseCase
 import com.skjline.fitness.feature.publish.fit.encoder.FileCreateResult
 import com.skjline.fitness.feature.publish.fit.encoder.FitProcessor
 import com.skjline.fitness.feature.publish.fit.model.DataRow
@@ -31,22 +33,27 @@ class PackDataRowUseCase {
     private val _staus = MutableStateFlow<PublishState>(Initial)
     val status: StateFlow<PublishState> = _staus.asStateFlow()
 
-    operator fun invoke(timestampStart: Long, rows: List<SessionEntry>) {
-        packCollection(timestampStart, rows)
+    operator fun invoke(sessionId: Long, timestampStart: Long, rows: List<SessionEntry>) {
+        packCollection(sessionId, timestampStart, rows)
     }
 
-    private fun packCollection(timestampStart: Long, rows: List<SessionEntry>) {
+    private fun packCollection(sessionId: Long, timestampStart: Long, rows: List<SessionEntry>) {
         CoroutineScope(dispatcherProvider.io + Job()).launch {
             val fit by lazy { AppComponent.get<FitProcessor>() }
             val filename = "$TRAINING_DATA_FILENAME_PREAMBLE-$timestampStart.$FIT_FILE_EXT"
 
             val content = FitContent(records = transformCollectedDataToRecords(timestampStart, rows))
-            println("create fit file with records $filename")
             val result = fit.processFitFileData(filename, content)
 
             val uploadState = if (result !is FileCreateResult.Success) {
                 DataUploadComplete(OnUploadFailed)
             } else {
+                CoroutineScope(coroutineContext + Job()).launch {
+                    println("uploading fit file with records $filename")
+                    val input = UpdateSessionPublishInput(sessionId, 0, result.fileUrl)
+                    UpdateSessionPublishedOnUseCase().invoke(input)
+                }
+
                 DataUploadReady(OnUploadReady(filename = result.fileUrl))
             }
 
@@ -67,7 +74,7 @@ class PackDataRowUseCase {
         lat: Long = 0,
         long: Long = 0,
     ): DataRow {
-        return DataRow(lat, long, power.toInt(), heart.toInt(), cadence.toInt(), speed.toInt())
+        return DataRow(id, lat, long, power.toInt(), heart.toInt(), cadence.toInt(), speed.toInt())
     }
 
     fun onUploadCompleted() {

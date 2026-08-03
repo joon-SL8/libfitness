@@ -2,8 +2,13 @@ package com.skjline.fitness.feature.publish.strava.api
 
 import io.ktor.client.engine.HttpClientEngineFactory
 
+sealed interface AuthorizationCodeResult
+data class Succeed(val source: String) : AuthorizationCodeResult
+data class Failed(val reason: String) : AuthorizationCodeResult
+
 interface Authorize {
-    fun authenticate()
+    @Throws(IllegalArgumentException::class)
+    fun authenticate(): AuthorizationCodeResult
 }
 
 interface ClientFactoryProvider {
