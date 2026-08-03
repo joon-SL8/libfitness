@@ -12,5 +12,6 @@ public data class Session(
     val duration: Long = 0L,
     val mrcFilename: String = EMPTY,
     val mrcFilepath: String = EMPTY,
+    val sessionPublished: Long = 0L,
     val sessionFilename: String = EMPTY,
 )

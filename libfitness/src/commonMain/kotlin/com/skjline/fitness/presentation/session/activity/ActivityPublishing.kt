@@ -38,14 +38,9 @@ fun ActivityPublishing(
         CoroutineScope(job).launch {
             dataCollectionService.status.collectLatest { item ->
                 val status = (item as? DataUploadReady) ?: return@collectLatest
-
                 val filename = status.param.filename
-                val publishSessionActivityUseCase = PublishSessionActivityUseCase(
-                    title = path.parseFilenameFromPath(),
-                    startTime = dataCollectionService.startedAt,
-                    duration = dataCollectionService.duration,
-                    fitFilename = filename,
-                )
+
+                val publishSessionActivityUseCase = PublishSessionActivityUseCase()
 
                 CoroutineScope(job).launch {
                     publishSessionActivityUseCase.status.collectLatest { result ->
@@ -81,7 +76,12 @@ fun ActivityPublishing(
                 }
 
                 uploadState.value = "Start Uploading"
-                publishSessionActivityUseCase.invoke()
+                publishSessionActivityUseCase.invoke(
+                    title = path.parseFilenameFromPath(),
+                    startTime = dataCollectionService.startedAt,
+                    duration = dataCollectionService.duration,
+                    fitFilename = filename,
+                )
             }
         }
 

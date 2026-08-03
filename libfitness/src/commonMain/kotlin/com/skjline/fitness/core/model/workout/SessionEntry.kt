@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 public data class SessionEntry(
     val id: Long = 0,
     val session: Long = 0,
+    val timestamp: Long = 0,
     val name: String = EMPTY,
     val description: String = EMPTY,
     val start: String = EMPTY,

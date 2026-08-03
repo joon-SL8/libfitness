@@ -19,6 +19,11 @@ UPDATE ActivitySession
  SET sessionPublished = :sessionPublishedOn
 WHERE id = :sessionId;
 
+updateSessionPublishFilename:
+UPDATE ActivitySession
+ SET sessionFilename = :sessionFilename
+WHERE id = :sessionId;
+
 getAll:
 SELECT * FROM ActivitySession;
 

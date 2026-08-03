@@ -8,6 +8,7 @@ import kotlin.native.ObjCName
 @Serializable
 @ObjCName(swiftName = "NSDataRow")
 data class DataRow(
+    val id: Long = 0L,
     val lat: Long = 0L,
     val long: Long = 0L,
     val power: Int = 0,

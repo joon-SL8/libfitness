@@ -1,5 +1,6 @@
 package com.skjline.fitness.data.storage.usecase
 
+import com.skjline.fitness.core.model.packet.Initial.timestamp
 import com.skjline.fitness.core.model.workout.SessionEntry
 import com.skjline.fitness.data.asset.model.GetSessionEntriesResult
 import com.skjline.fitness.data.asset.model.UpdateSessionResult
@@ -12,13 +13,19 @@ import kotlin.time.ExperimentalTime
 class UpdateSessionEntryUseCase : BaseDataUseCase<InsertSessionEntryInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: InsertSessionEntryInput): UpdateSessionResult {
         val entry = input.data.takeIf { it.id == 0L }?.let {
-            val id = storage.database.activityEntityQueries.getMaxId().executeAsOneOrNull() ?: 0L
+            val id = storage.database.activityEntityQueries
+                .getMaxIdForSession(input.data.session).executeAsOneOrNull() ?: 0L
             it.copy(id = id + 1)
-        } ?: input.data
+        } ?: run {
+            println("Failed Session Entry(${input.data.session}): ${input.data.name}")
+            return UpdateSessionResult(-1)
+        }
+
         with(entry) {
             storage.database.activityEntityQueries.insert(
                 id = id,
                 session = session,
+                timestamp = timestamp,
                 name = name,
                 description = description,
                 start = start,
@@ -42,6 +49,7 @@ class GetAllSessionEntryUseCase : BaseDataUseCase<GetAllInput, GetSessionEntries
             SessionEntry(
                 id = it.id,
                 session = it.session,
+                timestamp = it.timestamp,
                 name = it.name,
                 description = it.description.orEmpty(),
                 start = it.start,
@@ -65,6 +73,7 @@ class GetSessionEntryUseCase : BaseDataUseCase<GetSessionEntryInput, GetSessionE
                 SessionEntry(
                     id = it.id,
                     session = it.session,
+                    timestamp = it.timestamp,
                     name = it.name,
                     description = it.description.orEmpty(),
                     start = it.start,

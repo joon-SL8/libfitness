@@ -2,6 +2,8 @@ package com.skjline.fitness.feature.publish.strava.usecase
 
 import Platform
 import com.skjline.fitness.core.model.generic.Const.Companion.EMPTY
+import com.skjline.fitness.data.storage.input.UpdateSessionPublishInput
+import com.skjline.fitness.data.storage.usecase.UpdateSessionPublishedOnUseCase
 import com.skjline.fitness.feature.publish.fit.encoder.FitProcessor
 import com.skjline.fitness.feature.publish.strava.Const.Companion.API_BASE
 import com.skjline.fitness.feature.publish.strava.Const.Companion.ISO_8601_FORMAT
@@ -23,25 +25,15 @@ import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
 import org.koin.core.component.get
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
-class PublishSessionActivityUseCase(
-    private val title: String = EMPTY,
-    private val startTime: Long = 0L,
-    private val duration: Long = 0L,
-    private val distance: Long = 0L,
-    private val description: String = EMPTY,
-    private val fitFilename: String,
-) : ApiUseCase() {
-
+class PublishSessionActivityUseCase : ApiUseCase() {
     private val processState = MutableStateFlow<PublishResult>(PublishResult.Init)
     val status = processState.asStateFlow()
 
     private val platform = AppComponent.get<Platform>()
 
-    private val userDescription = description.ifEmpty {
+    private fun String.userDescription() = this.ifEmpty {
         "$DESCRIPTION_HEADER from ${platform.name}\n\n$APP_HOME_URL"
     }
 
@@ -50,9 +42,16 @@ class PublishSessionActivityUseCase(
         byUnicodePattern(ISO_8601_FORMAT)
     }
 
-    suspend operator fun invoke() {
+    suspend operator fun invoke(
+        title: String = EMPTY,
+        sessionId: Long = 0L,
+        startTime: Long = 0L,
+        duration: Long = 0L,
+        distance: Long = 0L,
+        description: String = EMPTY,
+        fitFilename: String,
+    ) {
         println("start processing the fit file ($fitFilename)")
-
         val localDateTime = Instant.fromEpochMilliseconds(startTime)
             .toLocalDateTime(TimeZone.currentSystemDefault())
         val formatted = localDateTime.format(formatter)
@@ -63,7 +62,7 @@ class PublishSessionActivityUseCase(
             append(KEY_PARAM_SPORT_TYPE, SPORT_HEADER)
             append(KEY_PARAM_START_DATE, formatted)
             append(KEY_PARAM_ELAPSED_TIME, (duration / 1000).toString())
-            append(KEY_PARAM_DESCRIPTION, userDescription)
+            append(KEY_PARAM_DESCRIPTION, description.userDescription())
             append(KEY_PARAM_DISTANCE, distance.toString())
             append(KEY_PARAM_TRAINER, 1.toString())
             append(KEY_PARAM_COMMUTE, 0.toString())
@@ -85,12 +84,16 @@ class PublishSessionActivityUseCase(
                     })
                     append(KEY_PARAM_NAME, title.ifEmpty { NAME_HEADER })
                     append(KEY_PARAM_DATA_TYPE, FILE_TYPE_VALUE)
-                    append(KEY_PARAM_DESCRIPTION, userDescription)
+                    append(KEY_PARAM_DESCRIPTION, description.userDescription())
                     append(KEY_PARAM_TRAINER, 1.toString())
                     append(KEY_PARAM_COMMUTE, 0.toString())
                 }
             ).bodyAsText()
             println(response)
+
+            val input = UpdateSessionPublishInput(sessionId, sessionId, "")
+            UpdateSessionPublishedOnUseCase().invoke(input)
+
             PublishResult.Success(response)
         } catch (ex: Exception) {
             println(ex.message)

@@ -31,18 +31,21 @@ class ContextProvider : NSObject(), ASWebAuthenticationPresentationContextProvid
     }
 }
 
-private suspend fun processAppLinkContent(link: String?) {
+private suspend fun processAppLinkContent(
+    link: String?
+): AuthorizationCodeResult {
     val lnk = link ?: ""
     println("processing applink content $link")
     val codeUseCase = AuthorizationCodeUseCase(lnk)
 
     val result = codeUseCase.invoke()
-    if (result !is AuthorizationCodeUseCase.AuthorizationCodeResult.Succeed) {
+    if (result !is Succeed) {
         // show error modal?
         println("error processing authorization code $result")
     } else {
         println("authorization code processed $result")
     }
+    return result
 }
 
 actual fun getStravaAuthorize(deeplink: String): Authorize {
@@ -50,12 +53,12 @@ actual fun getStravaAuthorize(deeplink: String): Authorize {
 
     val dispatcherProvider = AppComponent.get<DispatcherProvider>()
     val oauthStravaScheme =
-        NSURL(string = "strava://oauth/mobile/authorize?client_id=132336&redirect_uri=https%3A%2F%2Fskjline&response_type=code&approval_prompt=auto&scope=activity:write,read")
+        NSURL(string = "strava://oauth/mobile/authorize?client_id=132336&redirect_uri=skjline%3A%2F%2Ftrainer&response_type=code&approval_prompt=auto&scope=activity:write,read")
     val oauthWebScheme =
-        NSURL(string = "https://www.strava.com/oauth/mobile/authorize?client_id=132336&response_type=code&approval_prompt=auto&scope=activity%3Awrite%2Cread&redirect_uri=Skjline%3A%2F%2Fskjline")
+        NSURL(string = "https://www.strava.com/oauth/mobile/authorize?client_id=132336&response_type=code&approval_prompt=auto&scope=activity%3Awrite%2Cread&redirect_uri=skjline%3A%2F%2Ftrainer")
 
     return object : Authorize {
-        override fun authenticate() {
+        override fun authenticate(): AuthorizationCodeResult {
             println("initiate authenticate")
             val canOpen = UIApplication.sharedApplication.canOpenURL(oauthStravaScheme)
             println("Is Strava installed? $canOpen")
@@ -63,16 +66,17 @@ actual fun getStravaAuthorize(deeplink: String): Authorize {
                 // user has Strava App installed
                 UIApplication.sharedApplication.openURL(oauthStravaScheme)
             } else {
+                println("web authentication($deeplink): $oauthWebScheme")
                 val session = ASWebAuthenticationSession(
                     uRL = oauthWebScheme,
                     callbackURLScheme = deeplink,
                 ) { url, error ->
-                    println("perform authorization $url")
+                    println("perform authorization $url : $error")
 
-                    val context = dispatcherProvider.io + Job()
-                    CoroutineScope(context).launch {
-                        withContext(context) {
-                            processAppLinkContent(url?.toString())
+                    val ctxt = dispatcherProvider.io + Job()
+                    CoroutineScope(ctxt).launch {
+                        withContext(ctxt) {
+                            processAppLinkContent(url?.toString() ?: "skjline%3A%2F%2Ftrain")
                         }
                     }
                 }
@@ -80,6 +84,7 @@ actual fun getStravaAuthorize(deeplink: String): Authorize {
                 session.presentationContextProvider = ContextProvider()
                 session.start()
             }
+            return Succeed("")
         }
     }
 }

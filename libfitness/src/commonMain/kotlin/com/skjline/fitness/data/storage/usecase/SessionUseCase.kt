@@ -20,8 +20,6 @@ class UpdateSessionUseCase : BaseDataUseCase<InsertSessionInfoInput, UpdateSessi
             val id = storage.database.activitySessionQueries.getAll().executeAsList().size
             input.data.copy(id = (id + 1).toLong())
         } ?: input.data
-        println("Session started: ${session.name}(${session.id})")
-
         with(session) {
             storage.database.activitySessionQueries.insert(
                 id = id,
@@ -32,11 +30,9 @@ class UpdateSessionUseCase : BaseDataUseCase<InsertSessionInfoInput, UpdateSessi
                 mrcFilename = mrcFilename,
                 mrcFilepath = mrcFilepath,
                 sessionFilename = sessionFilename,
-                sessionPublished = 0,
+                sessionPublished = sessionPublished,
             )
         }
-
-        println("Start Session Data: ${session.name}(${session.id})")
         return UpdateSessionResult(session.id)
     }
 }
@@ -44,12 +40,25 @@ class UpdateSessionUseCase : BaseDataUseCase<InsertSessionInfoInput, UpdateSessi
 @OptIn(ExperimentalTime::class)
 class UpdateSessionPublishedOnUseCase : BaseDataUseCase<UpdateSessionPublishInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: UpdateSessionPublishInput): UpdateSessionResult {
-        val result = input.sessionId.takeIf { input.sessionId != 0L && input.timestamp != 0L }?.let {
-            storage.database.activitySessionQueries.updateSessionPublish(
-                input.timestamp, input.sessionId
-            )
+        val result = input.sessionId.takeIf { input.sessionId != 0L }?.let {
+            println("UpdateSessionPublishedOnUseCase(${input.sessionId}): ${input.filename}")
+            when {
+                (input.timestamp != 0L) -> {
+                    storage.database.activitySessionQueries.updateSessionPublish(
+                        input.timestamp, input.sessionId
+                    )
+                    input.sessionId
+                }
 
-            input.sessionId
+                (input.filename != "") -> {
+                    storage.database.activitySessionQueries.updateSessionPublishFilename(
+                        input.filename, input.sessionId
+                    )
+                    input.sessionId
+                }
+
+                else -> null
+            }
         } ?: -1L
 
         return UpdateSessionResult(result)
@@ -70,6 +79,7 @@ class GetAllSessionUseCase : BaseDataUseCase<GetAllInput, GetSessionResult>() {
                 mrcFilename = it.mrcFilename,
                 mrcFilepath = it.mrcFilepath,
                 sessionFilename = it.sessionFilename,
+                sessionPublished = it.sessionPublished ?: 0L,
             )
 
             val dt =
@@ -105,6 +115,7 @@ class GetSessionUseCase : BaseDataUseCase<GetSessionInfoInput, GetSessionResult>
                 mrcFilename = it.mrcFilename,
                 mrcFilepath = it.mrcFilepath,
                 sessionFilename = it.sessionFilename,
+                sessionPublished = it.sessionPublished ?: 0L,
             )
         }
 

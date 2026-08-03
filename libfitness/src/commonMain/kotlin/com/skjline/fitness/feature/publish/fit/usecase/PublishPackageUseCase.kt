@@ -5,6 +5,8 @@ import com.skjline.fitness.core.model.generic.Const.Companion.TRAINING_DATA_FILE
 import com.skjline.fitness.core.model.generic.PacketType
 import com.skjline.fitness.core.model.packet.DataPacket
 import com.skjline.fitness.core.utils.DispatcherProvider
+import com.skjline.fitness.data.storage.input.UpdateSessionPublishInput
+import com.skjline.fitness.data.storage.usecase.UpdateSessionPublishedOnUseCase
 import com.skjline.fitness.feature.publish.fit.encoder.FileCreateResult
 import com.skjline.fitness.feature.publish.fit.encoder.FitProcessor
 import com.skjline.fitness.feature.publish.fit.model.DataRow
@@ -25,12 +27,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import kotlin.time.Clock.System.now
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
-class PublishPackageUseCase(
-    private val collection: Map<PacketType, MutableList<DataPacket>>
-) {
+class PublishPackageUseCase {
     private val dispatcherProvider by lazy { AppComponent.get<DispatcherProvider>() }
 
     var startedOn = now().toEpochMilliseconds()
@@ -38,22 +36,24 @@ class PublishPackageUseCase(
     private val _staus = MutableStateFlow<PublishState>(Initial)
     val status: StateFlow<PublishState> = _staus.asStateFlow()
 
-    operator fun invoke() {
-        packCollection()
+    operator fun invoke(sessionId: Long, collection: Map<PacketType, MutableList<DataPacket>>) {
+        packCollection(sessionId, collection)
     }
 
-    private fun packCollection() {
+    private fun packCollection(sessionId: Long, collection: Map<PacketType, MutableList<DataPacket>>) {
         CoroutineScope(dispatcherProvider.io + Job()).launch {
             val fit by lazy { AppComponent.get<FitProcessor>() }
             val filename = "$TRAINING_DATA_FILENAME_PREAMBLE-$startedOn.$FIT_FILE_EXT"
 
-            val content = FitContent(records = transformCollectedDataToRecords())
-            println("create fit file with records $filename")
+            val content = FitContent(records = transformCollectedDataToRecords(collection))
             val result = fit.processFitFileData(filename, content)
-
             val uploadState = if (result !is FileCreateResult.Success) {
                 DataUploadComplete(OnUploadFailed)
             } else {
+                CoroutineScope(coroutineContext + Job()).launch {
+                    val input = UpdateSessionPublishInput(sessionId, 0, result.fileUrl)
+                    UpdateSessionPublishedOnUseCase().invoke(input)
+                }
                 DataUploadReady(OnUploadReady(filename = result.fileUrl))
             }
 
@@ -61,7 +61,7 @@ class PublishPackageUseCase(
         }
     }
 
-    private fun transformCollectedDataToRecords(): Map<Long, DataRow> {
+    private fun transformCollectedDataToRecords(collection: Map<PacketType, MutableList<DataPacket>>): Map<Long, DataRow> {
         val record = mutableMapOf<Long, DataRow>()
 
         collection.forEach { entry ->

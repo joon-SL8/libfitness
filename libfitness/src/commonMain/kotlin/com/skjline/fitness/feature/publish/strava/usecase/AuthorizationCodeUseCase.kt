@@ -2,6 +2,9 @@ package com.skjline.fitness.feature.publish.strava.usecase
 
 import com.skjline.fitness.core.model.generic.Const.Companion.EMPTY
 import com.skjline.fitness.core.utils.DispatcherProvider
+import com.skjline.fitness.feature.publish.strava.api.AuthorizationCodeResult
+import com.skjline.fitness.feature.publish.strava.api.Failed
+import com.skjline.fitness.feature.publish.strava.api.Succeed
 import com.skjline.fitness.injection.AppComponent
 import kotlinx.coroutines.withContext
 import org.koin.core.component.get
@@ -11,8 +14,8 @@ class AuthorizationCodeUseCase(
     private val dispatcherProvider: DispatcherProvider = AppComponent.get(),
 ) {
     suspend operator fun invoke(): AuthorizationCodeResult = withContext(dispatcherProvider.io) {
-        if (link.isEmpty()) {
-            return@withContext AuthorizationCodeResult.Failed("AppLink: empty content")
+        if (link.isEmpty() || !link.contains(APPLINK_PARAM_CODE)) {
+            return@withContext Failed("AppLink: empty content")
         }
 
         val scode = link.indexOf(APPLINK_PARAM_CODE) + APPLINK_PARAM_CODE.length
@@ -21,7 +24,7 @@ class AuthorizationCodeUseCase(
             val end = if (ecode > 0) ecode else link.length - scode
             link.substring(scode, end)
         } else {
-            return@withContext AuthorizationCodeResult.Failed("AppLink: code not found ($scode, $ecode)")
+            return@withContext Failed("AppLink: code not found ($scode, $ecode)")
         }
 
         val sscopes = link.indexOf(APPLINK_PARAM_SCOPE) + APPLINK_PARAM_SCOPE.length
@@ -30,25 +33,20 @@ class AuthorizationCodeUseCase(
                 .replace(APPLINK_PARAM_COLON_UNICODE, APPLINK_PARAM_SEPARATOR_COLON)
                 .split(APPLINK_PARAM_SLASH_UNICODE)
         } else {
-            return@withContext AuthorizationCodeResult.Failed("AppLink: scope not found")
+            return@withContext Failed("AppLink: scope not found")
         }
 
         return@withContext loadBearerFromToken(code)
     }
 
     private suspend fun loadBearerFromToken(code: String): AuthorizationCodeResult {
-        AuthorizationCodeResult.Failed("Processing authorization code: $code")
+        Failed("Processing authorization code: $code")
         val consumeAuthCode = AuthorizationResolveCodeUseCase(code)
         return if (consumeAuthCode()) {
-            AuthorizationCodeResult.Succeed("AppLink")
+            Succeed("AppLink")
         } else {
-            AuthorizationCodeResult.Failed("AppLink: Unable to convert")
+            Failed("AppLink: Unable to convert")
         }
-    }
-
-    sealed class AuthorizationCodeResult {
-        data class Succeed(val source: String) : AuthorizationCodeResult()
-        data class Failed(val reason: String) : AuthorizationCodeResult()
     }
 
     private companion object {
