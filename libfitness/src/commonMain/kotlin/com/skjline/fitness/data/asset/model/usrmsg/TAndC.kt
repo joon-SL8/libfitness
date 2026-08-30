@@ -19,14 +19,14 @@ public fun String.replaceTAndCPlaceholders(config: TAndCConfiguration): String {
 }
 
 public enum class TAndC {
-    TermsOfUser,
+    TermsOfUse,
     SafetyDisclaimer,
     PrivacyPolicy
     ;
 
     fun getDescription(): String {
         return when (this) {
-            TermsOfUser -> TERMS_OF_USE
+            TermsOfUse -> TERMS_OF_USE
             SafetyDisclaimer -> SAFETY_DISCLAIMER
             PrivacyPolicy -> PRIVACY_POLICY
         }
