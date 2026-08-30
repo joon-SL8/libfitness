@@ -41,8 +41,8 @@ class AuthorizationCodeUseCase(
 
     private suspend fun loadBearerFromToken(code: String): AuthorizationCodeResult {
         Failed("Processing authorization code: $code")
-        val consumeAuthCode = AuthorizationResolveCodeUseCase(code)
-        return if (consumeAuthCode()) {
+        val consumeAuthCode = AuthorizationResolveCodeUseCase()
+        return if (consumeAuthCode(code)) {
             Succeed("AppLink")
         } else {
             Failed("AppLink: Unable to convert")

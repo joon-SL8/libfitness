@@ -1,0 +1,27 @@
+CREATE TABLE Device (
+    id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    uuid TEXT NOT NULL,
+    type TEXT,
+    category TEXT,
+    characteristics TEXT
+);
+
+insertDevice:
+INSERT OR REPLACE INTO Device(
+  id,
+  name,
+  uuid,
+  type,
+  category,
+  characteristics
+) VALUES ?;
+
+getMaxId:
+SELECT id FROM Device ORDER BY id DESC LIMIT 1;
+
+getDeviceByUUID:
+SELECT * FROM Device WHERE uuid = :uuid;
+
+deleteDeviceByUUID:
+DELETE FROM Device WHERE uuid = :uuid;

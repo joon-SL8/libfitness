@@ -55,7 +55,8 @@ actual fun getStravaAuthorize(deeplink: String): Authorize {
     val oauthStravaScheme =
         NSURL(string = "strava://oauth/mobile/authorize?client_id=132336&redirect_uri=skjline%3A%2F%2Ftrainer&response_type=code&approval_prompt=auto&scope=activity:write,read")
     val oauthWebScheme =
-        NSURL(string = "https://www.strava.com/oauth/mobile/authorize?client_id=132336&response_type=code&approval_prompt=auto&scope=activity%3Awrite%2Cread&redirect_uri=skjline%3A%2F%2Ftrainer")
+        NSURL(string = "https://www.strava.com/oauth/mobile/authorize?client_id=132336&response_type=code&approval_prompt=auto&scope=activity%3Awrite%2Cread&redirect_uri=skjline://trainer")
+//        NSURL(string = "https://www.strava.com/oauth/mobile/authorize?client_id=132336&response_type=code&approval_prompt=auto&scope=activity%3Awrite%2Cread&redirect_uri=skjline%3A%2F%2Ftrainer")
 
     return object : Authorize {
         override fun authenticate(): AuthorizationCodeResult {

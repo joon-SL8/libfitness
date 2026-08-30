@@ -1,0 +1,11 @@
+CREATE TABLE TAndCAgreementEntity (
+    type TEXT NOT NULL PRIMARY KEY,
+    isAgreed INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    dateAgreed INTEGER
+);
+
+getAgreement:
+SELECT * FROM TAndCAgreementEntity WHERE type = ?;
+
+upsertAgreement:
+INSERT OR REPLACE INTO TAndCAgreementEntity(type, isAgreed, dateAgreed) VALUES (?, ?, ?);
