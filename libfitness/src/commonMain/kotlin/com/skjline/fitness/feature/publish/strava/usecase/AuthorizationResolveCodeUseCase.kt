@@ -17,12 +17,10 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.http.parameters
 import org.koin.core.component.get
 
-class AuthorizationResolveCodeUseCase(
-    private val code: String,
+class AuthorizationResolveCodeUseCase : ApiUseCase() {
     private val bearerStorage: BearerStorage = AppComponent.get<BearerStorage>()
-) : ApiUseCase() {
 
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(code: String): Boolean {
         val token = try {
             println("submit code for JWT")
             // create a request and resolve the code to a Strava auth token

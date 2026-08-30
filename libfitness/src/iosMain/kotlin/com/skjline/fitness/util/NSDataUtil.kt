@@ -42,7 +42,7 @@ interface NSDataUtil {
 const val OFFSET_MS = 631065600000
 
 inline fun FitContent.forEachRecordPerform(block: (NSInteger, DataRow) -> Unit) = records.forEach {
-    val recordTS = ((it.key + it.value.id) * 1000L - OFFSET_MS) / 1000L
+    val recordTS = ((it.key + it.value.id) * 1000L - OFFSET_MS) / 10_000L
     val dictValue = it.value
 
     block(recordTS, dictValue)

@@ -44,16 +44,18 @@ class UpdateSessionPublishedOnUseCase : BaseDataUseCase<UpdateSessionPublishInpu
             println("UpdateSessionPublishedOnUseCase(${input.sessionId}): ${input.filename}")
             when {
                 (input.timestamp != 0L) -> {
-                    storage.database.activitySessionQueries.updateSessionPublish(
+                    val result = storage.database.activitySessionQueries.updateSessionPublish(
                         input.timestamp, input.sessionId
                     )
+                    println("Updating Timestamp for Session: ${input.sessionId} - $result")
                     input.sessionId
                 }
 
                 (input.filename != "") -> {
-                    storage.database.activitySessionQueries.updateSessionPublishFilename(
+                    val result = storage.database.activitySessionQueries.updateSessionPublishFilename(
                         input.filename, input.sessionId
                     )
+                    println("Updating session filename: ${input.filename} - $result")
                     input.sessionId
                 }
 

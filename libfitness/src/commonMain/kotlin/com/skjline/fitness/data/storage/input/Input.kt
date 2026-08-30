@@ -1,5 +1,6 @@
 package com.skjline.fitness.data.storage.input
 
+import com.skjline.fitness.core.model.ble.BluetoothComponent
 import com.skjline.fitness.core.model.workout.Session
 import com.skjline.fitness.core.model.workout.SessionEntry
 
@@ -30,3 +31,7 @@ data class GetSessionInfoInput(val id: Long?, val name: String?, val dateFrom: L
 data class DeleteSessionInfoInput(val sessionId: Long) : Input
 
 data class GetSessionEntryInput(val sessionId: Long) : Input
+
+data class GetDeviceInput(val uuid: String) : Input
+
+data class InsertDeviceInput(val device: BluetoothComponent) : Input

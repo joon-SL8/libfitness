@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalTime::class)
-
 package com.skjline.fitness.data.storage.usecase
 
 import com.skjline.fitness.data.asset.model.UpdateCredentialResult

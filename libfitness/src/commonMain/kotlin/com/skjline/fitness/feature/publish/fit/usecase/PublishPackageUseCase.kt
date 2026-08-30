@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.component.get
 import kotlin.time.Clock.System.now
 
@@ -36,29 +37,29 @@ class PublishPackageUseCase {
     private val _staus = MutableStateFlow<PublishState>(Initial)
     val status: StateFlow<PublishState> = _staus.asStateFlow()
 
-    operator fun invoke(sessionId: Long, collection: Map<PacketType, MutableList<DataPacket>>) {
-        packCollection(sessionId, collection)
+    suspend operator fun invoke(sessionId: Long, collection: Map<PacketType, MutableList<DataPacket>>): PublishState {
+        return packCollection(sessionId, collection)
     }
 
-    private fun packCollection(sessionId: Long, collection: Map<PacketType, MutableList<DataPacket>>) {
-        CoroutineScope(dispatcherProvider.io + Job()).launch {
-            val fit by lazy { AppComponent.get<FitProcessor>() }
-            val filename = "$TRAINING_DATA_FILENAME_PREAMBLE-$startedOn.$FIT_FILE_EXT"
+    private suspend fun packCollection(sessionId: Long, collection: Map<PacketType, MutableList<DataPacket>>):
+            PublishState = withContext(dispatcherProvider.io + Job()) {
+        val fit by lazy { AppComponent.get<FitProcessor>() }
+        val filename = "$TRAINING_DATA_FILENAME_PREAMBLE-$startedOn.$FIT_FILE_EXT"
 
-            val content = FitContent(records = transformCollectedDataToRecords(collection))
-            val result = fit.processFitFileData(filename, content)
-            val uploadState = if (result !is FileCreateResult.Success) {
-                DataUploadComplete(OnUploadFailed)
-            } else {
-                CoroutineScope(coroutineContext + Job()).launch {
-                    val input = UpdateSessionPublishInput(sessionId, 0, result.fileUrl)
-                    UpdateSessionPublishedOnUseCase().invoke(input)
-                }
-                DataUploadReady(OnUploadReady(filename = result.fileUrl))
+        val content = FitContent(records = transformCollectedDataToRecords(collection))
+        val result = fit.processFitFileData(filename, content)
+        val uploadState = if (result !is FileCreateResult.Success) {
+            DataUploadComplete(OnUploadFailed)
+        } else {
+            CoroutineScope(coroutineContext + Job()).launch {
+                val input = UpdateSessionPublishInput(sessionId, 0, result.fileUrl)
+                UpdateSessionPublishedOnUseCase().invoke(input)
             }
-
-            _staus.emit(uploadState)
+            DataUploadReady(OnUploadReady(filename = result.fileUrl))
         }
+
+        _staus.emit(uploadState)
+        return@withContext uploadState
     }
 
     private fun transformCollectedDataToRecords(collection: Map<PacketType, MutableList<DataPacket>>): Map<Long, DataRow> {

@@ -1,5 +1,6 @@
 package com.skjline.fitness.data.asset.model
 
+import com.skjline.fitness.core.model.ble.BluetoothComponent
 import com.skjline.fitness.core.model.workout.Session
 import com.skjline.fitness.core.model.workout.SessionEntry
 
@@ -8,6 +9,8 @@ interface DataResult
 data class ValidateCredentialResult(
     val validationResult: ValidationResult
 ) : DataResult
+
+data class ErrorUpdatObject(val result: String) : DataResult
 
 data object UpdateCredentialResult : DataResult
 
@@ -26,3 +29,6 @@ data class UpdateSessionResult(val id: Long) : DataResult
 data class GetSessionResult(val sessions: List<Session>) : DataResult
 
 data class GetSessionEntriesResult(val entries: List<SessionEntry>) : DataResult
+
+data object UpdateDeviceResult: DataResult
+data class GetDeviceResult(val device: BluetoothComponent) : DataResult

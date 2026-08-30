@@ -40,6 +40,7 @@ kotlin {
 
     android {
         namespace = group.toString()
+        minSdk = libs.versions.android.minSdk.get().toInt()
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
         androidResources.enable = true
