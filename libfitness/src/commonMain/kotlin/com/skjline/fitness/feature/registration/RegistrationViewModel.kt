@@ -1,6 +1,6 @@
 package com.skjline.fitness.feature.registration
 
-import Launcher
+import com.skjline.fitness.Launcher
 import androidx.lifecycle.ViewModel
 import com.skjline.fitness.core.utils.DispatcherProvider
 import com.skjline.fitness.data.asset.model.DataResult

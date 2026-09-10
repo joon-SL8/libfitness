@@ -1,3 +1,5 @@
+package com.skjline.fitness
+
 import com.skjline.fitness.injection.AppComponent
 import com.skjline.fitness.presentation.DismissActivity
 import com.skjline.fitness.presentation.DismissModal
@@ -6,15 +8,12 @@ import com.skjline.fitness.presentation.RegistrationRoute
 import com.skjline.fitness.presentation.Route
 import com.skjline.fitness.presentation.SessionRoute
 import com.skjline.fitness.presentation.ShowModal
+import mainViewController
 import org.koin.core.component.KoinComponent
 import platform.UIKit.UIApplication
-import platform.UIKit.UIDevice
 import platform.UIKit.UIModalPresentationFullScreen
-
-class IOSPlatform : Platform {
-    override val name: String =
-        UIDevice.currentDevice.systemName() + " " + UIDevice.currentDevice.systemVersion
-}
+import registrationViewController
+import sessionViewController
 
 class IOSSessionLauncher : Launcher {
     val koinProvider : KoinComponent by lazy {
@@ -50,5 +49,3 @@ class IOSSessionLauncher : Launcher {
         }
     }
 }
-
-actual fun getPlatform(): Platform = IOSPlatform()

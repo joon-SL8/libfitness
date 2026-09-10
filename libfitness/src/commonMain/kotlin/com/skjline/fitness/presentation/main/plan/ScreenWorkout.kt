@@ -1,6 +1,6 @@
 package com.skjline.fitness.presentation.main.plan
 
-import Launcher
+import com.skjline.fitness.Launcher
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

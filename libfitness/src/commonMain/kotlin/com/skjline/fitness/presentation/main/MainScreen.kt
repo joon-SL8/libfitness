@@ -1,6 +1,6 @@
 package com.skjline.fitness.presentation.main
 
-import Launcher
+import com.skjline.fitness.Launcher
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.FloatingActionButton

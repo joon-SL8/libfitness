@@ -5,15 +5,14 @@ import com.skjline.fitness.core.utils.DispatcherProvider
 import com.skjline.fitness.injection.AppComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import org.koin.core.component.get
+import org.koin.core.component.inject
 import kotlin.time.Clock.System.now
 import kotlin.time.ExperimentalTime
 
 // need to implement a method to persist the token and/or create token with additional security
 @OptIn(ExperimentalTime::class)
 class StorageDatabase {
-
-    private val dispatcherProvider = AppComponent.get<DispatcherProvider>()
+    private val dispatcherProvider by AppComponent.inject<DispatcherProvider>()
 
     lateinit var database: FitnessDatabase
         private set

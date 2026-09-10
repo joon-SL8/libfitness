@@ -1,6 +1,6 @@
 package com.skjline.fitness.feature.publish.strava.usecase
 
-import Platform
+import com.skjline.fitness.core.Platform
 import com.skjline.fitness.core.model.generic.Const.Companion.EMPTY
 import com.skjline.fitness.data.storage.input.UpdateSessionPublishInput
 import com.skjline.fitness.data.storage.usecase.UpdateSessionPublishedOnUseCase
