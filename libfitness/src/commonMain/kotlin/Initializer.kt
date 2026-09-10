@@ -4,6 +4,7 @@ import com.skjline.fitness.data.storage.StorageDatabase
 import com.skjline.fitness.injection.AppComponent
 import com.skjline.fitness.injection.appModule
 import com.skjline.fitness.DefaultLauncher
+import com.skjline.fitness.Launcher
 import org.koin.core.KoinApplication
 import org.koin.core.component.get
 import org.koin.core.context.startKoin

@@ -1,15 +1,22 @@
 package com.skjline.fitness.injection
 
-import Platform
+import com.skjline.fitness.core.Platform
+import com.skjline.fitness.core.getPlatform
 import com.skjline.fitness.core.security.EncryptedPropertyManager
+import com.skjline.fitness.core.security.EncryptionHandler
+import com.skjline.fitness.core.security.EncryptionProcessor
 import com.skjline.fitness.core.security.getPropertyManager
 import com.skjline.fitness.core.utils.DispatcherProvider
-import getPlatform
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 internal val privateSkjlineModule = module {
-    single<EncryptedPropertyManager> { getPropertyManager() }
+    single<EncryptionProcessor> {
+        EncryptionHandler("1234567890abcdef", "12345678")
+    }
+    single<EncryptedPropertyManager> {
+        getPropertyManager()
+    }
 }
 
 val platformModule = module {
@@ -17,5 +24,4 @@ val platformModule = module {
 
     singleOf<Platform>(::getPlatform)
     singleOf<DispatcherProvider>(::DispatcherProvider)
-//    single<Launcher> { getSessionScreenLauncher() }
 }
