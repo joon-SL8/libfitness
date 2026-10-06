@@ -49,7 +49,7 @@ inline fun FitContent.forEachRecordPerform(block: (NSInteger, DataRow) -> Unit) 
 }
 
 fun loadFileToByteArray(filename: String): ByteArray {
-    println("saving fit on ios: $filename")
+    println("converting fit for ios: $filename")
     return FileSystem.SYSTEM.source(filename.toPath()).buffer().readByteArray()
 }
 

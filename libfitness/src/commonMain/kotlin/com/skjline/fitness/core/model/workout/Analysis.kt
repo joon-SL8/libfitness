@@ -1,21 +1,26 @@
 package com.skjline.fitness.core.model.workout
 
 import com.skjline.fitness.data.storage.Constants.Companion.PROFILE_KEY_FTP
-import com.skjline.fitness.data.storage.StorageDatabase
+import com.skjline.fitness.data.storage.DataHandler
 import com.skjline.fitness.injection.AppComponent
-import org.koin.core.component.get
+import org.koin.core.component.inject
 import kotlin.math.pow
 
 class Analysis {
-    private val storage = AppComponent.get<StorageDatabase>()
+    private val storage: DataHandler by AppComponent.inject()
+
     var ftp: Double = 0.0
         private set
 
     suspend fun initialize() {
-        val profiles = storage.database.userProfileQueries.getAll().executeAsList()
-        val profilesDebug = profiles.joinToString { "${it.name}: ${it.data_}" }
-        ftp = (profiles.firstOrNull { it.name == PROFILE_KEY_FTP }?.data_?.toDouble()?.takeIf { it > 0.0 } ?: 1.0)
-        println("FTP: $ftp - Profiles: $profilesDebug")
+        val profile = storage.getUserProfile(PROFILE_KEY_FTP)
+        ftp = try {
+            profile?.data_?.toDouble()?.takeIf { it > 0.0 } ?: 1.0
+        } catch (e: Exception) {
+            println("Error Parsing FTP Profiles: ($profile)")
+            1.0
+        }
+        println("User FTP: $ftp")
     }
 
     fun averagePower(power: List<Double>): Double {

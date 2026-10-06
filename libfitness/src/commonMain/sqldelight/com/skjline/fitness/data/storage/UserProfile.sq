@@ -9,14 +9,21 @@ insert:
 INSERT OR REPLACE INTO UserProfileEntity(id, name, data, updated)
 VALUES(?, ?, ?, ?);
 
+getCount:
+SELECT COUNT(*) FROM UserProfileEntity;
+
 getAll:
 SELECT * FROM UserProfileEntity;
 
+getForKey:
+SELECT * FROM UserProfileEntity
+WHERE name =:name;
+
 updateData:
 UPDATE UserProfileEntity
-SET data = :data
-WHERE id IS :id;
+SET data =:data
+WHERE id =:id;
 
 delete:
 DELETE FROM UserProfileEntity
-WHERE id IS :id;
+WHERE id =:id;

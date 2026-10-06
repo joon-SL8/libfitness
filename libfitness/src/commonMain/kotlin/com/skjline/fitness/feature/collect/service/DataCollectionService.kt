@@ -11,7 +11,6 @@ import com.skjline.fitness.core.model.generic.Start
 import com.skjline.fitness.core.model.generic.Stop
 import com.skjline.fitness.core.model.packet.DataPacket
 import com.skjline.fitness.core.model.packet.TargetPowerContent
-import com.skjline.fitness.core.model.sensor.BikeTrainerSensor
 import com.skjline.fitness.core.model.sensor.PowerControllable
 import com.skjline.fitness.core.model.timer.IntervalTimeDataTimer
 import com.skjline.fitness.core.model.timer.SessionTimeDataTimer
@@ -36,9 +35,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.core.component.get
 import kotlin.time.Clock.System.now
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class DataCollectionService : ActivityDataCollector {
     private lateinit var course: MrcCourse
     private val dispatcherProvider: DispatcherProvider = AppComponent.get<DispatcherProvider>()

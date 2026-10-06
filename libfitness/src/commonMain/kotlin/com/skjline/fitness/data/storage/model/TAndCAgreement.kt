@@ -5,7 +5,7 @@ data class TAndCAgreement(
     val isAgreed: Boolean = false,
     val dateAgreed: Long = 0L
 ) {
-    public companion object {
+    companion object {
         fun createAgreement() : TAndCAgreement {
             return TAndCAgreement()
         }

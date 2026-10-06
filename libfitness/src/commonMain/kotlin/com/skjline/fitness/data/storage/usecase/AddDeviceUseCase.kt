@@ -16,12 +16,12 @@ class AddDeviceUseCase : BaseDataUseCase<InsertDeviceInput, DataResult>() {
             it.id.isEmpty()
         }?.let { dev ->
             // insert new item
-            val max = storage.database.deviceQueries
+            val max = database.database.deviceQueries
                 .getMaxId().executeAsOneOrNull() ?: 0
             input.device.copy(id = dev.id)
         } ?: input.device
 
-        storage.database.deviceQueries
+        database.database.deviceQueries
             .insertDevice(device.map())
         return UpdateDeviceResult
     }

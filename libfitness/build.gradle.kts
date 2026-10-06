@@ -44,6 +44,7 @@ kotlin {
         compileSdk = libs.versions.android.compileSdk.get().toInt()
 
         androidResources.enable = true
+        withHostTest {}
     }
 
     sqldelight {
@@ -63,6 +64,9 @@ kotlin {
     }
 
     sourceSets {
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
 

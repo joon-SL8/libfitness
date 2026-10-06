@@ -1,19 +1,16 @@
 package com.skjline.fitness.data.storage.usecase
 
-import com.skjline.fitness.core.model.packet.Initial.timestamp
 import com.skjline.fitness.core.model.workout.SessionEntry
 import com.skjline.fitness.data.asset.model.GetSessionEntriesResult
 import com.skjline.fitness.data.asset.model.UpdateSessionResult
 import com.skjline.fitness.data.storage.input.GetAllInput
 import com.skjline.fitness.data.storage.input.GetSessionEntryInput
 import com.skjline.fitness.data.storage.input.InsertSessionEntryInput
-import kotlin.time.ExperimentalTime
 
-@OptIn(ExperimentalTime::class)
 class UpdateSessionEntryUseCase : BaseDataUseCase<InsertSessionEntryInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: InsertSessionEntryInput): UpdateSessionResult {
         val entry = input.data.takeIf { it.id == 0L }?.let {
-            val id = storage.database.activityEntityQueries
+            val id = database.database.activityEntityQueries
                 .getMaxIdForSession(input.data.session).executeAsOneOrNull() ?: 0L
             it.copy(id = id + 1)
         } ?: run {
@@ -22,7 +19,7 @@ class UpdateSessionEntryUseCase : BaseDataUseCase<InsertSessionEntryInput, Updat
         }
 
         with(entry) {
-            storage.database.activityEntityQueries.insert(
+            database.database.activityEntityQueries.insert(
                 id = id,
                 session = session,
                 timestamp = timestamp,
@@ -44,7 +41,7 @@ class UpdateSessionEntryUseCase : BaseDataUseCase<InsertSessionEntryInput, Updat
 
 class GetAllSessionEntryUseCase : BaseDataUseCase<GetAllInput, GetSessionEntriesResult>() {
     override suspend operator fun invoke(input: GetAllInput): GetSessionEntriesResult {
-        val contents = storage.database.activityEntityQueries.getAll().executeAsList().map {
+        val contents = database.database.activityEntityQueries.getAll().executeAsList().map {
             println("Add Session Entry: ${it.id}:${it.session}")
             SessionEntry(
                 id = it.id,
@@ -67,7 +64,7 @@ class GetAllSessionEntryUseCase : BaseDataUseCase<GetAllInput, GetSessionEntries
 
 class GetSessionEntryUseCase : BaseDataUseCase<GetSessionEntryInput, GetSessionEntriesResult>() {
     override suspend operator fun invoke(input: GetSessionEntryInput): GetSessionEntriesResult {
-        val contents = storage.database
+        val contents = database.database
             .activityEntityQueries.getAllForSession(input.sessionId)
             .executeAsList().map {
                 SessionEntry(
@@ -91,10 +88,10 @@ class GetSessionEntryUseCase : BaseDataUseCase<GetSessionEntryInput, GetSessionE
 
 class DeleteSessionEntryUseCase : BaseDataUseCase<GetSessionEntryInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: GetSessionEntryInput): UpdateSessionResult {
-        val id = storage.database.activityEntityQueries
+        val id = database.database.activityEntityQueries
             .getAllForSession(input.sessionId).executeAsOneOrNull()?.id ?: -1L
         if (id != -1L) {
-            storage.database.activityEntityQueries.delete(input.sessionId)
+            database.database.activityEntityQueries.delete(input.sessionId)
         }
         return UpdateSessionResult(id)
     }

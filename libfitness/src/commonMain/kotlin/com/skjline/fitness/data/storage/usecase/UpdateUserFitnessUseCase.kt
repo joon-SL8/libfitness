@@ -4,28 +4,23 @@ import com.skjline.fitness.core.utils.DispatcherProvider
 import com.skjline.fitness.data.asset.model.UpdateFitnessResult
 import com.skjline.fitness.data.storage.Constants.Companion.PROFILE_KEY_FTP
 import com.skjline.fitness.data.storage.Constants.Companion.PROFILE_KEY_WEIGHT
-import com.skjline.fitness.data.storage.UserProfileEntity
 import com.skjline.fitness.data.storage.input.FitnessInput
 import com.skjline.fitness.injection.AppComponent
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.core.component.get
-import kotlin.time.Clock.System.now
-import kotlin.time.ExperimentalTime
+import org.koin.core.component.inject
 
-@OptIn(ExperimentalTime::class)
 class UpdateUserFitnessUseCase : BaseDataUseCase<FitnessInput, UpdateFitnessResult>() {
-    override suspend operator fun invoke(input: FitnessInput): UpdateFitnessResult {
-        val contents = storage.database.userProfileQueries
-            .getAll().executeAsList()
+    private val dispatcher: DispatcherProvider by AppComponent.inject()
 
-        val index = contents.size
-        val dispatcher = AppComponent.get<DispatcherProvider>()
+    override suspend operator fun invoke(input: FitnessInput): UpdateFitnessResult {
+        val ftp = input.ftp.toString()
+        val wt = input.weight.toString()
         withContext(dispatcher.io) {
             listOf(
-                launch { insertOrUpdateData(index + 1, input.ftp.toString(), PROFILE_KEY_FTP, contents) },
-                launch { insertOrUpdateData(index + 2, input.weight.toString(), PROFILE_KEY_WEIGHT, contents) }
+                launch { storage.insertOrUpdateUserProfile(PROFILE_KEY_FTP, ftp) },
+                launch { storage.insertOrUpdateUserProfile(PROFILE_KEY_WEIGHT, wt) }
             ).joinAll()
         }
 
