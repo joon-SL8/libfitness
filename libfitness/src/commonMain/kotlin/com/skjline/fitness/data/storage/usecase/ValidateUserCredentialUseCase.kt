@@ -14,17 +14,11 @@ class ValidateUserCredentialUseCase : BaseDataUseCase<CredentialDataInput, Valid
     val onValidated: StateFlow<Boolean> = _onValidated
 
     override suspend operator fun invoke(input: CredentialDataInput): ValidateCredentialResult {
-        val contents = storage.database.userProfileQueries
-            .getAll().executeAsList()
-        index = contents.size
-
         if (input.username.isEmpty() || input.password.isEmpty()) {
             return ValidateCredentialResult(ValidationResult.Error)
         }
 
-        contents.findLast {
-            it.name == KEY_CREDENTIAL
-        }?.let { credential ->
+        storage.getUserProfile(KEY_CREDENTIAL)?.let { credential ->
             val persistedCredential = credential.data_.split("::")
             val isProperCredentialFormat = persistedCredential.size == 2
 
@@ -38,7 +32,6 @@ class ValidateUserCredentialUseCase : BaseDataUseCase<CredentialDataInput, Valid
                 return ValidateCredentialResult(ValidationResult.Valid)
             }
         }
-
         return ValidateCredentialResult(ValidationResult.Invalid)
     }
 }

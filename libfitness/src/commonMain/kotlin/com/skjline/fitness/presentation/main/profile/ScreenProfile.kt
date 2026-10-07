@@ -14,11 +14,11 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.core.screen.ScreenKey
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.skjline.fitness.core.security.EncryptionProcessor
 import com.skjline.fitness.core.utils.DispatcherProvider
+import com.skjline.fitness.core.utils.inject
 import com.skjline.fitness.data.storage.BearerStorage
-import com.skjline.fitness.data.storage.StorageDatabase
-import com.skjline.fitness.data.storage.Constants.Companion.PROFILE_KEY_FTP
-import com.skjline.fitness.data.storage.Constants.Companion.PROFILE_KEY_MAX_HR
+import com.skjline.fitness.data.storage.DataHandler
 import com.skjline.fitness.feature.publish.strava.api.getStravaAuthorize
 import com.skjline.fitness.injection.AppComponent
 import com.skjline.fitness.presentation.shared.ImageButton
@@ -42,6 +42,7 @@ import org.koin.core.component.get
 import kotlin.random.Random
 
 class ScreenProfile : Screen {
+    private val encryptedPropertyManager: EncryptionProcessor by inject()
 
     override val key: ScreenKey
         get() = super.key + "${Random.nextDouble(Double.MIN_VALUE, Double.MAX_VALUE)}"
@@ -52,11 +53,10 @@ class ScreenProfile : Screen {
 
         val dispatcherProvider = AppComponent.get<DispatcherProvider>()
         val bearerStorage = AppComponent.get<BearerStorage>()
-        val db = AppComponent.get<StorageDatabase>()
+        val storage = AppComponent.get<DataHandler>()
 
-        val profile = db.database.userProfileQueries.getAll().executeAsList()
-        val ftp = profile.firstOrNull { it.name == PROFILE_KEY_FTP }?.data_ ?: "100"
-        val hr = profile.firstOrNull { it.name == PROFILE_KEY_MAX_HR }?.data_ ?: "100"
+        val ftp = "100"
+        val hr = "100"
 
         val hasExtAppToken = remember {
             bearerStorage.getToken()?.accessToken?.isNotEmpty() == true

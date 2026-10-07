@@ -10,8 +10,9 @@ import com.skjline.fitness.core.model.packet.DataPacket
 import com.skjline.fitness.core.model.packet.TargetPower
 import com.skjline.fitness.core.model.packet.TargetPowerContent
 import com.skjline.fitness.core.model.workout.MrcCourse
+import com.skjline.fitness.core.security.EncryptionProcessor
 import com.skjline.fitness.data.storage.Constants.Companion.PROFILE_KEY_FTP
-import com.skjline.fitness.data.storage.StorageDatabase
+import com.skjline.fitness.data.storage.DataHandler
 import com.skjline.fitness.injection.AppComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class TargetPowerDataTimer : ObservableDataTimer<TargetPower>() {
     private var intervalIndex = 0
     private var course: MrcCourse? = null
 
-    private val storage: StorageDatabase by AppComponent.inject()
+    private val storage: DataHandler by AppComponent.inject()
 
     private var powerTarget: Int = 0
     private var powerAdjust: Int = 0
@@ -52,10 +53,8 @@ class TargetPowerDataTimer : ObservableDataTimer<TargetPower>() {
 
     private fun setExecutionTimeObserver(timeObserver: Flow<Long>) {
         CoroutineScope(dispatcherProvider.io).launch {
-            val ftps = storage.database.userProfileQueries.getAll().executeAsList()
-            val ftp = ftps.firstOrNull { it.name == PROFILE_KEY_FTP }?.data_?.toInt() ?: 1
-            println("member power: $ftp - ${ftps.joinToString()}")
-
+            val ftp = storage.getUserProfile(PROFILE_KEY_FTP) ?: return@launch
+            println("member power: $ftp")
             timeObserver.collectLatest { timestamp ->
                 val size = course?.course?.size ?: 0
                 if (intervalIndex > size)
@@ -72,7 +71,7 @@ class TargetPowerDataTimer : ObservableDataTimer<TargetPower>() {
                 }
 
                 val level = course?.let { it.course[intervalIndex + 1].second } ?: 0.0f
-                powerTarget = (powerAdjust + (ftp * level) / 100).toInt()
+                powerTarget = (powerAdjust + (ftp.data_.toFloat() * level) / 100).toInt()
                 updatePowerLevel(powerTarget, powerAdjust)
             }
         }

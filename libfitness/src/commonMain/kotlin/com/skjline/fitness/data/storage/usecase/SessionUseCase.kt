@@ -10,18 +10,16 @@ import com.skjline.fitness.data.storage.input.InsertSessionInfoInput
 import com.skjline.fitness.data.storage.input.UpdateSessionPublishInput
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-@OptIn(ExperimentalTime::class)
 class UpdateSessionUseCase : BaseDataUseCase<InsertSessionInfoInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: InsertSessionInfoInput): UpdateSessionResult {
         val session = input.data.takeIf { input.data.id == 0L }?.let {
-            val id = storage.database.activitySessionQueries.getAll().executeAsList().size
+            val id = database.database.activitySessionQueries.getAll().executeAsList().size
             input.data.copy(id = (id + 1).toLong())
         } ?: input.data
         with(session) {
-            storage.database.activitySessionQueries.insert(
+            database.database.activitySessionQueries.insert(
                 id = id,
                 name = name,
                 description = description,
@@ -37,14 +35,13 @@ class UpdateSessionUseCase : BaseDataUseCase<InsertSessionInfoInput, UpdateSessi
     }
 }
 
-@OptIn(ExperimentalTime::class)
 class UpdateSessionPublishedOnUseCase : BaseDataUseCase<UpdateSessionPublishInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: UpdateSessionPublishInput): UpdateSessionResult {
         val result = input.sessionId.takeIf { input.sessionId != 0L }?.let {
             println("UpdateSessionPublishedOnUseCase(${input.sessionId}): ${input.filename}")
             when {
                 (input.timestamp != 0L) -> {
-                    val result = storage.database.activitySessionQueries.updateSessionPublish(
+                    val result = database.database.activitySessionQueries.updateSessionPublish(
                         input.timestamp, input.sessionId
                     )
                     println("Updating Timestamp for Session: ${input.sessionId} - $result")
@@ -52,7 +49,7 @@ class UpdateSessionPublishedOnUseCase : BaseDataUseCase<UpdateSessionPublishInpu
                 }
 
                 (input.filename != "") -> {
-                    val result = storage.database.activitySessionQueries.updateSessionPublishFilename(
+                    val result = database.database.activitySessionQueries.updateSessionPublishFilename(
                         input.filename, input.sessionId
                     )
                     println("Updating session filename: ${input.filename} - $result")
@@ -69,7 +66,7 @@ class UpdateSessionPublishedOnUseCase : BaseDataUseCase<UpdateSessionPublishInpu
 
 class GetAllSessionUseCase : BaseDataUseCase<GetAllInput, GetSessionResult>() {
     override suspend operator fun invoke(input: GetAllInput): GetSessionResult {
-        val fetched = storage.database.activitySessionQueries.getAll().executeAsList()
+        val fetched = database.database.activitySessionQueries.getAll().executeAsList()
         println("Get All Sessions: ${fetched.size}")
         val contents = fetched.map {
             val session = Session(
@@ -86,7 +83,7 @@ class GetAllSessionUseCase : BaseDataUseCase<GetAllInput, GetSessionResult>() {
 
             val dt =
                 Instant.fromEpochSeconds(it.sessionDate).toLocalDateTime(TimeZone.currentSystemDefault()).toString()
-            val entities = storage.database.activityEntityQueries.getAllForSession(it.id).executeAsList()
+            val entities = database.database.activityEntityQueries.getAllForSession(it.id).executeAsList()
             println("Get All Entities for Sessions(${it.id}|${it.name}): ${entities.size} ${it.sessionDate}($dt)")
 
             return@map session
@@ -100,12 +97,12 @@ class GetSessionUseCase : BaseDataUseCase<GetSessionInfoInput, GetSessionResult>
     override suspend operator fun invoke(input: GetSessionInfoInput): GetSessionResult {
         val contents = with(input) {
             id.takeIf { it != null && it > 0L }?.let { sessionId ->
-                storage.database.activitySessionQueries.getBySessionId(sessionId).executeAsList()
+                database.database.activitySessionQueries.getBySessionId(sessionId).executeAsList()
             } ?: name?.let { sessionName ->
-                storage.database.activitySessionQueries.getByName(sessionName).executeAsList()
+                database.database.activitySessionQueries.getByName(sessionName).executeAsList()
             } ?: dateFrom?.let {
                 val to = dateTo ?: (it + (7 * 24 * 60 * 60 * 1000))
-                storage.database.activitySessionQueries.getByDateRange(it, to).executeAsList()
+                database.database.activitySessionQueries.getByDateRange(it, to).executeAsList()
             } ?: throw IllegalArgumentException("Name or Date is required")
         }.map {
             Session(
@@ -127,9 +124,9 @@ class GetSessionUseCase : BaseDataUseCase<GetSessionInfoInput, GetSessionResult>
 
 class DeleteSessionInfoUseCase : BaseDataUseCase<DeleteSessionInfoInput, UpdateSessionResult>() {
     override suspend operator fun invoke(input: DeleteSessionInfoInput): UpdateSessionResult {
-        val id = storage.database.activitySessionQueries
+        val id = database.database.activitySessionQueries
             .getBySessionId(input.sessionId).executeAsOneOrNull()?.let {
-                storage.database.activitySessionQueries.delete(it.id)
+                database.database.activitySessionQueries.delete(it.id)
                 it.id
             } ?: -1L
         return UpdateSessionResult(id)

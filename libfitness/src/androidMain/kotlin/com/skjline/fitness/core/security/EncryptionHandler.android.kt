@@ -30,7 +30,7 @@ public actual class EncryptionHandler actual constructor(
             KeyGenerator.getInstance(AES_ALGORITHM)
                 .apply { init(AES_KEY_SIZE) }.generateKey()
         } else {
-            SecretKeySpec(secretPhrase.toByteArray(), AES_ALGORITHM)
+            SecretKeySpec(secretPhrase.toByteArray(Charsets.UTF_8), AES_ALGORITHM)
         }
 
     private val iv: IvParameterSpec
@@ -42,7 +42,8 @@ public actual class EncryptionHandler actual constructor(
                 SecureRandom().nextBytes(bytes)
                 IvParameterSpec(bytes)
             } else {
-                IvParameterSpec(specPhrase.toByteArray())
+                val paddedSpec = specPhrase.toByteArray(Charsets.UTF_8).copyOf(IV_SIZE)
+                IvParameterSpec(paddedSpec)
             }
     }
 
@@ -111,7 +112,7 @@ public actual class EncryptionHandler actual constructor(
 
     private companion object {
         const val IV_SIZE = 16
-        const val AES_KEY_SIZE = 256
+        const val AES_KEY_SIZE = 128 // AES-128 is 16 bytes, AES-256 is 32 bytes
 
         const val AES_ALGORITHM = "AES"
         const val MD5_ALGORITHM = "MD5"

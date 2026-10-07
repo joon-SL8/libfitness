@@ -64,7 +64,7 @@ class PackDataRowUseCase {
 
     private fun transformCollectedDataToRecords(timestampStart: Long, rows: List<SessionEntry>): Map<Long, DataRow> {
         val record: Map<Long, DataRow> = rows.withIndex().associateBy(
-            { timestampStart + (it.index * 1_000L) },
+            { timestampStart + (it.index * 100L) },
             { it.value.toDataRow(0, 0) }
         )
 

@@ -4,7 +4,6 @@ import com.skjline.fitness.data.asset.model.usrmsg.TAndC
 import com.skjline.fitness.data.storage.StorageDatabase
 import com.skjline.fitness.injection.AppComponent
 import org.koin.core.component.inject
-import kotlin.time.Instant
 
 class SetTAndCStatusUseCase {
     private val storageDatabase: StorageDatabase by AppComponent.inject()
